@@ -1,0 +1,28 @@
+{
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "tools/tailwind-sync-plugin/dist",
+        "main": "tools/tailwind-sync-plugin/src/index.ts",
+        "tsConfig": "tools/tailwind-sync-plugin/tsconfig.lib.json",
+        "rootDir": "tools/tailwind-sync-plugin/src",
+        "generatePackageJson": false,
+        "deleteOutputPath": true,
+        "assets": [
+          {
+            "input": "./tools/tailwind-sync-plugin/src",
+            "glob": "**/!(*.ts)",
+            "output": "."
+          },
+          {
+            "input": "./tools/tailwind-sync-plugin/src",
+            "glob": "**/*.d.ts",
+            "output": "."
+          }
+        ]
+      }
+    }
+  }
+}

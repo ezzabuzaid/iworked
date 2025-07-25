@@ -1,0 +1,177 @@
+generator client {
+  output   = "../../../node_modules/.prisma/client"
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("CONNECTION_STRING")
+  shadowDatabaseUrl = env("SHADOW_CONNECTION_STRING")
+}
+
+// Time-tracking and invoicing models
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  projects Project[]
+  invoices Invoice[]
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  hourlyRate  Decimal? @db.Decimal(10, 2) // Hourly rate at time of project creation
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  clientId    String
+
+  // Relations
+  user        User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  client      Client?       @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  timeEntries TimeEntry[]
+  InvoiceLine InvoiceLine[]
+
+  @@index([userId, clientId])
+}
+
+model TimeEntry {
+  id        String   @id @default(uuid())
+  startedAt DateTime
+  endedAt   DateTime
+  note      String?
+  isLocked  Boolean  @default(false) // True when part of a non-draft invoice
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  projectId String
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Restrict)
+
+  @@index([userId, projectId])
+  @@index([startedAt, endedAt])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+}
+
+model Invoice {
+  id         String        @id @default(uuid())
+  status     InvoiceStatus @default(DRAFT)
+  dateFrom   DateTime
+  dateTo     DateTime
+  sentAt     DateTime?
+  paidAt     DateTime?
+  paidAmount Decimal?      @db.Decimal(10, 2)
+  pdfUrl     String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  userId     String
+  clientId   String
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  client       Client        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  invoiceLines InvoiceLine[]
+
+  @@index([userId, clientId])
+  @@index([status])
+}
+
+model InvoiceLine {
+  id          String  @id @default(uuid())
+  description String // Project name at time of invoice creation
+  hours       Decimal @db.Decimal(5, 2) // Total hours for this project
+  rate        Decimal @db.Decimal(10, 2) // Hourly rate at time of invoice creation
+  amount      Decimal @db.Decimal(10, 2) // hours * rate
+  invoiceId   String
+  projectId   String
+
+  // Relations
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId])
+}
+
+// AUTH MODELS FROM BETTER AUTH
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  isAnonymous   Boolean?
+  sessions      Session[]
+  accounts      Account[]
+
+  // our relationships
+  clients     Client[]
+  timeEntries TimeEntry[]
+  invoices    Invoice[]
+  projects    Project[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}

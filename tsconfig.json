@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/backend"
+    },
+    {
+      "path": "./packages/isomorphic"
+    },
+    {
+      "path": "./packages/persistence/db"
+    },
+    {
+      "path": "./packages/client"
+    },
+    {
+      "path": "./tools/tailwind-sync-plugin"
+    },
+    {
+      "path": "./packages/auth"
+    }
+  ]
+}

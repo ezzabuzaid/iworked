@@ -1,0 +1,46 @@
+#syntax=docker/dockerfile:1.7-labs
+FROM node:lts-alpine AS base
+
+FROM base AS builder
+WORKDIR /app
+COPY .npmrc .
+COPY package-lock.json* .
+COPY --parents **/package.json .
+
+# Cache .nx directory to speed up builds
+RUN --mount=type=cache,target=/root/.npm npm install
+COPY . .
+
+# Keep the API URL empty to use the same host
+ENV VITE_API_URL=/
+ENV NX_DAEMON=false
+RUN --mount=type=cache,id=nx,target=/app/.nx ./node_modules/.bin/nx run-many --targets build --projects backend,frontend --prod
+
+FROM builder AS intermediate
+WORKDIR /app
+RUN mkdir -p all-dists \
+ && for d in packages/*/dist; do \
+      pkg=$(basename $(dirname "$d")); \
+      cp -r "$d" "all-dists/$pkg"; \
+    done
+
+FROM base AS start
+WORKDIR /app
+
+COPY --from=intermediate /app/all-dists ./packages
+COPY --from=builder /app/apps/frontend/dist ./apps/frontend/dist
+COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+
+COPY --from=builder /app/package.json ./package.json
+RUN --mount=type=cache,id=prod-deps,target=/root/.npm npm install --legacy-peer-deps --omit=dev --ignore-scripts
+
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+RUN tree -d /app
+
+ENV NODE_ENV=production
+USER node
+EXPOSE 3000
+HEALTHCHECK CMD wget --no-verbose --spider --tries=1 http://localhost:3000 || exit 1
+CMD ["node", "apps/backend"]

@@ -1,0 +1,46 @@
+{
+  "name": "backend",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/backend/src",
+  "projectType": "application",
+  "tags": [],
+  "implicitDependencies": ["db"],
+  "targets": {
+    "build": {
+      "dependsOn": ["^build"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "deleteOutputPath": true,
+        "bundle": true,
+        "platform": "node",
+        "format": ["esm"],
+        "main": "apps/backend/src/server.ts",
+        "tsConfig": "apps/backend/tsconfig.app.json",
+        "esbuildOptions": {
+          "banner": {
+            "js": "import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);"
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "backend:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "backend:build:development"
+        },
+        "production": {
+          "buildTarget": "backend:build:production"
+        }
+      }
+    }
+  }
+}

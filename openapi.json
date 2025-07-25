@@ -1,0 +1,5013 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Virtual Care API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Same host"
+    },
+    {
+      "url": "https://agent.fly.dev",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "clients"
+    },
+    {
+      "name": "projects"
+    },
+    {
+      "name": "timeEntries"
+    },
+    {
+      "name": "reports"
+    },
+    {
+      "name": "invoices"
+    }
+  ],
+  "security": [
+    {
+      "bearer": []
+    }
+  ],
+  "paths": {
+    "/api/clients": {
+      "post": {
+        "operationId": "createClient",
+        "parameters": [],
+        "tags": ["clients"],
+        "description": "Create a new client for the authenticated user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["name"],
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Response for 201",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "createdAt",
+                    "updatedAt",
+                    "userId"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getClients",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "tags": ["clients"],
+        "description": "Get a paginated list of clients for the authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "_count": {
+                                "type": "object",
+                                "properties": {
+                                  "projects": {
+                                    "type": "number"
+                                  },
+                                  "invoices": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": ["projects", "invoices"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["_count"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "email": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "userId": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "email",
+                              "createdAt",
+                              "updatedAt",
+                              "userId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "pageSize": {
+                          "type": "number"
+                        },
+                        "totalCount": {
+                          "type": "number"
+                        },
+                        "totalPages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pageSize",
+                        "totalCount",
+                        "totalPages"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "pagination"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/clients/{id}": {
+      "get": {
+        "operationId": "getClient",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["clients"],
+        "description": "Get a specific client by ID.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "projects": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "userId": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "hourlyRate": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "clientId": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "createdAt",
+                              "updatedAt",
+                              "userId",
+                              "description",
+                              "hourlyRate",
+                              "clientId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "_count": {
+                          "type": "object",
+                          "properties": {
+                            "invoices": {
+                              "type": "number"
+                            }
+                          },
+                          "required": ["invoices"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["projects", "_count"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "email",
+                        "createdAt",
+                        "updatedAt",
+                        "userId"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Client not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateClient",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["clients"],
+        "description": "Update a client's information.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "createdAt",
+                    "updatedAt",
+                    "userId"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Client not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects": {
+      "post": {
+        "operationId": "createProject",
+        "parameters": [],
+        "tags": ["projects"],
+        "description": "Create a new project for a client.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["name", "clientId"],
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "hourlyRate": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "clientId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Response for 201",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "client": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                },
+                                "userId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "email",
+                                "createdAt",
+                                "updatedAt",
+                                "userId"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["client"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "hourlyRate": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "clientId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "createdAt",
+                        "updatedAt",
+                        "userId",
+                        "description",
+                        "hourlyRate",
+                        "clientId"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Client not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getProjects",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "clientId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["projects"],
+        "description": "Get a paginated list of projects for the authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "client": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "email": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      },
+                                      "userId": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "email",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "userId"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              },
+                              "_count": {
+                                "type": "object",
+                                "properties": {
+                                  "timeEntries": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": ["timeEntries"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["client", "_count"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "userId": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "hourlyRate": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "clientId": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "createdAt",
+                              "updatedAt",
+                              "userId",
+                              "description",
+                              "hourlyRate",
+                              "clientId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "pageSize": {
+                          "type": "number"
+                        },
+                        "totalCount": {
+                          "type": "number"
+                        },
+                        "totalPages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pageSize",
+                        "totalCount",
+                        "totalPages"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "pagination"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{id}": {
+      "get": {
+        "operationId": "getProject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["projects"],
+        "description": "Get a specific project by ID.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "client": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                },
+                                "userId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "email",
+                                "createdAt",
+                                "updatedAt",
+                                "userId"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        },
+                        "_count": {
+                          "type": "object",
+                          "properties": {
+                            "timeEntries": {
+                              "type": "number"
+                            }
+                          },
+                          "required": ["timeEntries"],
+                          "additionalProperties": false
+                        },
+                        "timeEntries": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "userId": {
+                                "type": "string"
+                              },
+                              "startedAt": {
+                                "type": "string"
+                              },
+                              "endedAt": {
+                                "type": "string"
+                              },
+                              "note": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "isLocked": {
+                                "type": "boolean"
+                              },
+                              "projectId": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "createdAt",
+                              "updatedAt",
+                              "userId",
+                              "startedAt",
+                              "endedAt",
+                              "note",
+                              "isLocked",
+                              "projectId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": ["client", "_count", "timeEntries"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "hourlyRate": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "clientId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "createdAt",
+                        "updatedAt",
+                        "userId",
+                        "description",
+                        "hourlyRate",
+                        "clientId"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Project not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateProject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["projects"],
+        "description": "Update a project's information.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "hourlyRate": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "hourlyRate": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "clientId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "createdAt",
+                        "updatedAt",
+                        "userId",
+                        "description",
+                        "hourlyRate",
+                        "clientId"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "client": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "email": {
+                                      "anyOf": [
+                                        {
+                                          "type": "null"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    },
+                                    "userId": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "email",
+                                    "createdAt",
+                                    "updatedAt",
+                                    "userId"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              ]
+                            }
+                          },
+                          "required": ["client"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "hourlyRate": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "clientId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "createdAt",
+                            "updatedAt",
+                            "userId",
+                            "description",
+                            "hourlyRate",
+                            "clientId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Project not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/time-entries": {
+      "post": {
+        "operationId": "createTimeEntry",
+        "parameters": [],
+        "tags": ["timeEntries"],
+        "description": "Create a new time entry for a project.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["startedAt", "endedAt", "projectId"],
+                "type": "object",
+                "properties": {
+                  "startedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "note": {
+                    "type": "string"
+                  },
+                  "projectId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Response for 201",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "project": {
+                          "allOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "client": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "email": {
+                                          "anyOf": [
+                                            {
+                                              "type": "null"
+                                            },
+                                            {
+                                              "type": "string"
+                                            }
+                                          ]
+                                        },
+                                        "createdAt": {
+                                          "type": "string"
+                                        },
+                                        "updatedAt": {
+                                          "type": "string"
+                                        },
+                                        "userId": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "email",
+                                        "createdAt",
+                                        "updatedAt",
+                                        "userId"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": ["client"],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                },
+                                "userId": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "hourlyRate": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "clientId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "createdAt",
+                                "updatedAt",
+                                "userId",
+                                "description",
+                                "hourlyRate",
+                                "clientId"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["project"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "startedAt": {
+                          "type": "string"
+                        },
+                        "endedAt": {
+                          "type": "string"
+                        },
+                        "note": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "isLocked": {
+                          "type": "boolean"
+                        },
+                        "projectId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "createdAt",
+                        "updatedAt",
+                        "userId",
+                        "startedAt",
+                        "endedAt",
+                        "note",
+                        "isLocked",
+                        "projectId"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "enum": ["End time must be after start time"],
+                            "type": "string"
+                          },
+                          "cause": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "enum": ["api/invalid-time-range"],
+                                "type": "string"
+                              },
+                              "detail": {
+                                "enum": [
+                                  "endedAt must be greater than startedAt"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": ["code", "detail"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["message", "cause"],
+                        "additionalProperties": false
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Project not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getTimeEntries",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "clientId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "tags": ["timeEntries"],
+        "description": "Get a paginated list of time entries for the authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "project": {
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "client": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "string"
+                                              },
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "email": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "null"
+                                                  },
+                                                  {
+                                                    "type": "string"
+                                                  }
+                                                ]
+                                              },
+                                              "createdAt": {
+                                                "type": "string"
+                                              },
+                                              "updatedAt": {
+                                                "type": "string"
+                                              },
+                                              "userId": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "name",
+                                              "email",
+                                              "createdAt",
+                                              "updatedAt",
+                                              "userId"
+                                            ],
+                                            "additionalProperties": false
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "required": ["client"],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      },
+                                      "userId": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "hourlyRate": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "clientId": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "userId",
+                                      "description",
+                                      "hourlyRate",
+                                      "clientId"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              }
+                            },
+                            "required": ["project"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "userId": {
+                                "type": "string"
+                              },
+                              "startedAt": {
+                                "type": "string"
+                              },
+                              "endedAt": {
+                                "type": "string"
+                              },
+                              "note": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "isLocked": {
+                                "type": "boolean"
+                              },
+                              "projectId": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "createdAt",
+                              "updatedAt",
+                              "userId",
+                              "startedAt",
+                              "endedAt",
+                              "note",
+                              "isLocked",
+                              "projectId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "pageSize": {
+                          "type": "number"
+                        },
+                        "totalCount": {
+                          "type": "number"
+                        },
+                        "totalPages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pageSize",
+                        "totalCount",
+                        "totalPages"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "pagination"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/time-entries/{id}": {
+      "get": {
+        "operationId": "getTimeEntry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["timeEntries"],
+        "description": "Get a specific time entry by ID.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "project": {
+                          "allOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "client": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "email": {
+                                          "anyOf": [
+                                            {
+                                              "type": "null"
+                                            },
+                                            {
+                                              "type": "string"
+                                            }
+                                          ]
+                                        },
+                                        "createdAt": {
+                                          "type": "string"
+                                        },
+                                        "updatedAt": {
+                                          "type": "string"
+                                        },
+                                        "userId": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "email",
+                                        "createdAt",
+                                        "updatedAt",
+                                        "userId"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": ["client"],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                },
+                                "userId": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "hourlyRate": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "clientId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "createdAt",
+                                "updatedAt",
+                                "userId",
+                                "description",
+                                "hourlyRate",
+                                "clientId"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["project"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "startedAt": {
+                          "type": "string"
+                        },
+                        "endedAt": {
+                          "type": "string"
+                        },
+                        "note": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "isLocked": {
+                          "type": "boolean"
+                        },
+                        "projectId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "createdAt",
+                        "updatedAt",
+                        "userId",
+                        "startedAt",
+                        "endedAt",
+                        "note",
+                        "isLocked",
+                        "projectId"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Time entry not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateTimeEntry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["timeEntries"],
+        "description": "Update a time entry (only if not locked in an invoice).",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "startedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "note": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "startedAt": {
+                          "type": "string"
+                        },
+                        "endedAt": {
+                          "type": "string"
+                        },
+                        "note": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "isLocked": {
+                          "type": "boolean"
+                        },
+                        "projectId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "createdAt",
+                        "updatedAt",
+                        "userId",
+                        "startedAt",
+                        "endedAt",
+                        "note",
+                        "isLocked",
+                        "projectId"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "project": {
+                              "allOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "client": {
+                                      "anyOf": [
+                                        {
+                                          "type": "null"
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string"
+                                            },
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "email": {
+                                              "anyOf": [
+                                                {
+                                                  "type": "null"
+                                                },
+                                                {
+                                                  "type": "string"
+                                                }
+                                              ]
+                                            },
+                                            "createdAt": {
+                                              "type": "string"
+                                            },
+                                            "updatedAt": {
+                                              "type": "string"
+                                            },
+                                            "userId": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "id",
+                                            "name",
+                                            "email",
+                                            "createdAt",
+                                            "updatedAt",
+                                            "userId"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "required": ["client"],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    },
+                                    "userId": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "anyOf": [
+                                        {
+                                          "type": "null"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
+                                    },
+                                    "hourlyRate": {
+                                      "anyOf": [
+                                        {
+                                          "type": "null"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
+                                    },
+                                    "clientId": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "createdAt",
+                                    "updatedAt",
+                                    "userId",
+                                    "description",
+                                    "hourlyRate",
+                                    "clientId"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              ]
+                            }
+                          },
+                          "required": ["project"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "string"
+                            },
+                            "startedAt": {
+                              "type": "string"
+                            },
+                            "endedAt": {
+                              "type": "string"
+                            },
+                            "note": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "isLocked": {
+                              "type": "boolean"
+                            },
+                            "projectId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "createdAt",
+                            "updatedAt",
+                            "userId",
+                            "startedAt",
+                            "endedAt",
+                            "note",
+                            "isLocked",
+                            "projectId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "message": {
+                                "enum": [
+                                  "Time entry is locked and cannot be modified"
+                                ],
+                                "type": "string"
+                              },
+                              "cause": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "enum": ["api/time-entry-locked"],
+                                    "type": "string"
+                                  },
+                                  "detail": {
+                                    "enum": [
+                                      "This time entry is part of a non-draft invoice and cannot be modified"
+                                    ],
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["code", "detail"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["message", "cause"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "message": {
+                                "enum": ["End time must be after start time"],
+                                "type": "string"
+                              },
+                              "cause": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "enum": ["api/invalid-time-range"],
+                                    "type": "string"
+                                  },
+                                  "detail": {
+                                    "enum": [
+                                      "endedAt must be greater than startedAt"
+                                    ],
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["code", "detail"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["message", "cause"],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Time entry not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTimeEntry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["timeEntries"],
+        "description": "Delete a time entry (only if not locked in an invoice).",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "enum": ["Time entry deleted successfully"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "enum": [
+                              "Time entry is locked and cannot be deleted"
+                            ],
+                            "type": "string"
+                          },
+                          "cause": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "enum": ["api/time-entry-locked"],
+                                "type": "string"
+                              },
+                              "detail": {
+                                "enum": [
+                                  "This time entry is part of a non-draft invoice and cannot be deleted"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": ["code", "detail"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["message", "cause"],
+                        "additionalProperties": false
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Time entry not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/summary": {
+      "get": {
+        "operationId": "getSummary",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "groupBy",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["client", "project"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "clientId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Get summary report of hours and amounts by client or project for a date range.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "groupBy": {
+                          "enum": ["client"],
+                          "type": "string"
+                        },
+                        "dateRange": {
+                          "type": "object",
+                          "properties": {
+                            "startDate": {
+                              "type": "string"
+                            },
+                            "endDate": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["startDate", "endDate"],
+                          "additionalProperties": false
+                        },
+                        "summary": {
+                          "type": "array",
+                          "items": {}
+                        }
+                      },
+                      "required": ["groupBy", "dateRange", "summary"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "groupBy": {
+                          "enum": ["project"],
+                          "type": "string"
+                        },
+                        "dateRange": {
+                          "type": "object",
+                          "properties": {
+                            "startDate": {
+                              "type": "string"
+                            },
+                            "endDate": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["startDate", "endDate"],
+                          "additionalProperties": false
+                        },
+                        "summary": {
+                          "type": "array",
+                          "items": {}
+                        }
+                      },
+                      "required": ["groupBy", "dateRange", "summary"],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "error": {
+                            "enum": ["End date must be after start date"],
+                            "type": "string"
+                          }
+                        },
+                        "required": ["error"],
+                        "additionalProperties": false
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/detailed": {
+      "get": {
+        "operationId": "getDetailedReport",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "clientId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Get detailed time entries for a specific date range with totals.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "durationHours": {
+                            "type": "number"
+                          },
+                          "amount": {
+                            "type": "number"
+                          },
+                          "project": {
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "client": {
+                                    "anyOf": [
+                                      {
+                                        "type": "null"
+                                      },
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "email": {
+                                            "anyOf": [
+                                              {
+                                                "type": "null"
+                                              },
+                                              {
+                                                "type": "string"
+                                              }
+                                            ]
+                                          },
+                                          "createdAt": {
+                                            "type": "string"
+                                          },
+                                          "updatedAt": {
+                                            "type": "string"
+                                          },
+                                          "userId": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "email",
+                                          "createdAt",
+                                          "updatedAt",
+                                          "userId"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": ["client"],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "userId": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "anyOf": [
+                                      {
+                                        "type": "null"
+                                      },
+                                      {
+                                        "type": "string"
+                                      }
+                                    ]
+                                  },
+                                  "hourlyRate": {
+                                    "anyOf": [
+                                      {
+                                        "type": "null"
+                                      },
+                                      {
+                                        "type": "string"
+                                      }
+                                    ]
+                                  },
+                                  "clientId": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "userId",
+                                  "description",
+                                  "hourlyRate",
+                                  "clientId"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ]
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          },
+                          "userId": {
+                            "type": "string"
+                          },
+                          "startedAt": {
+                            "type": "string"
+                          },
+                          "endedAt": {
+                            "type": "string"
+                          },
+                          "note": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "isLocked": {
+                            "type": "boolean"
+                          },
+                          "projectId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "durationHours",
+                          "amount",
+                          "project",
+                          "id",
+                          "createdAt",
+                          "updatedAt",
+                          "userId",
+                          "startedAt",
+                          "endedAt",
+                          "note",
+                          "isLocked",
+                          "projectId"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "pageSize": {
+                          "type": "number"
+                        },
+                        "totalCount": {
+                          "type": "number"
+                        },
+                        "totalPages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pageSize",
+                        "totalCount",
+                        "totalPages"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "totals": {
+                      "type": "object",
+                      "properties": {
+                        "totalHours": {
+                          "type": "number"
+                        },
+                        "totalAmount": {
+                          "type": "number"
+                        }
+                      },
+                      "required": ["totalHours", "totalAmount"],
+                      "additionalProperties": false
+                    },
+                    "dateRange": {
+                      "type": "object",
+                      "properties": {
+                        "startDate": {
+                          "type": "string"
+                        },
+                        "endDate": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["startDate", "endDate"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "pagination", "totals", "dateRange"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/invoices": {
+      "post": {
+        "operationId": "createInvoice",
+        "parameters": [],
+        "tags": ["invoices"],
+        "description": "Create a draft invoice from time entries for a client within a date range.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["clientId", "dateFrom", "dateTo"],
+                "type": "object",
+                "properties": {
+                  "clientId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "dateFrom": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "dateTo": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Response for 201",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "client": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                },
+                                "userId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "email",
+                                "createdAt",
+                                "updatedAt",
+                                "userId"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "invoiceLines": {
+                              "type": "array",
+                              "items": {
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "project": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "createdAt": {
+                                            "type": "string"
+                                          },
+                                          "updatedAt": {
+                                            "type": "string"
+                                          },
+                                          "userId": {
+                                            "type": "string"
+                                          },
+                                          "description": {
+                                            "anyOf": [
+                                              {
+                                                "type": "null"
+                                              },
+                                              {
+                                                "type": "string"
+                                              }
+                                            ]
+                                          },
+                                          "hourlyRate": {
+                                            "anyOf": [
+                                              {
+                                                "type": "null"
+                                              },
+                                              {
+                                                "type": "string"
+                                              }
+                                            ]
+                                          },
+                                          "clientId": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "createdAt",
+                                          "updatedAt",
+                                          "userId",
+                                          "description",
+                                          "hourlyRate",
+                                          "clientId"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "required": ["project"],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "projectId": {
+                                        "type": "string"
+                                      },
+                                      "hours": {
+                                        "type": "string"
+                                      },
+                                      "rate": {
+                                        "type": "string"
+                                      },
+                                      "amount": {
+                                        "type": "string"
+                                      },
+                                      "invoiceId": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "description",
+                                      "projectId",
+                                      "hours",
+                                      "rate",
+                                      "amount",
+                                      "invoiceId"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "required": ["client", "invoiceLines"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "anyOf": [
+                                {
+                                  "enum": ["DRAFT"],
+                                  "type": "string"
+                                },
+                                {
+                                  "enum": ["SENT"],
+                                  "type": "string"
+                                },
+                                {
+                                  "enum": ["PAID"],
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "clientId": {
+                              "type": "string"
+                            },
+                            "dateFrom": {
+                              "type": "string"
+                            },
+                            "dateTo": {
+                              "type": "string"
+                            },
+                            "sentAt": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "paidAt": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "paidAmount": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "pdfUrl": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "createdAt",
+                            "updatedAt",
+                            "userId",
+                            "status",
+                            "clientId",
+                            "dateFrom",
+                            "dateTo",
+                            "sentAt",
+                            "paidAt",
+                            "paidAmount",
+                            "pdfUrl"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "message": {
+                                "enum": ["End date must be after start date"],
+                                "type": "string"
+                              },
+                              "cause": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "enum": ["api/invalid-date-range"],
+                                    "type": "string"
+                                  },
+                                  "detail": {
+                                    "enum": [
+                                      "dateTo must be greater than dateFrom"
+                                    ],
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["code", "detail"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["message", "cause"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "message": {
+                                "enum": [
+                                  "No unlocked time entries found for the specified client and date range"
+                                ],
+                                "type": "string"
+                              },
+                              "cause": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "enum": ["api/no-time-entries"],
+                                    "type": "string"
+                                  },
+                                  "detail": {
+                                    "enum": [
+                                      "No billable time entries available for invoicing"
+                                    ],
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["code", "detail"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["message", "cause"],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Client not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getInvoices",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["DRAFT", "SENT", "PAID"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "clientId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Get a paginated list of invoices for the authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "totalAmount": {
+                            "type": "number"
+                          },
+                          "client": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "email": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "userId": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "email",
+                              "createdAt",
+                              "updatedAt",
+                              "userId"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "invoiceLines": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "projectId": {
+                                  "type": "string"
+                                },
+                                "hours": {
+                                  "type": "string"
+                                },
+                                "rate": {
+                                  "type": "string"
+                                },
+                                "amount": {
+                                  "type": "string"
+                                },
+                                "invoiceId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "description",
+                                "projectId",
+                                "hours",
+                                "rate",
+                                "amount",
+                                "invoiceId"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          },
+                          "userId": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "anyOf": [
+                              {
+                                "enum": ["DRAFT"],
+                                "type": "string"
+                              },
+                              {
+                                "enum": ["SENT"],
+                                "type": "string"
+                              },
+                              {
+                                "enum": ["PAID"],
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "clientId": {
+                            "type": "string"
+                          },
+                          "dateFrom": {
+                            "type": "string"
+                          },
+                          "dateTo": {
+                            "type": "string"
+                          },
+                          "sentAt": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "paidAt": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "paidAmount": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          "pdfUrl": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "totalAmount",
+                          "client",
+                          "invoiceLines",
+                          "id",
+                          "createdAt",
+                          "updatedAt",
+                          "userId",
+                          "status",
+                          "clientId",
+                          "dateFrom",
+                          "dateTo",
+                          "sentAt",
+                          "paidAt",
+                          "paidAmount",
+                          "pdfUrl"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "number"
+                        },
+                        "pageSize": {
+                          "type": "number"
+                        },
+                        "totalCount": {
+                          "type": "number"
+                        },
+                        "totalPages": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pageSize",
+                        "totalCount",
+                        "totalPages"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "pagination"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/invoices/{id}": {
+      "get": {
+        "operationId": "getInvoice",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Get a specific invoice by ID.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalAmount": {
+                      "type": "number"
+                    },
+                    "client": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "email",
+                        "createdAt",
+                        "updatedAt",
+                        "userId"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "invoiceLines": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "project": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "userId": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "anyOf": [
+                                      {
+                                        "type": "null"
+                                      },
+                                      {
+                                        "type": "string"
+                                      }
+                                    ]
+                                  },
+                                  "hourlyRate": {
+                                    "anyOf": [
+                                      {
+                                        "type": "null"
+                                      },
+                                      {
+                                        "type": "string"
+                                      }
+                                    ]
+                                  },
+                                  "clientId": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "userId",
+                                  "description",
+                                  "hourlyRate",
+                                  "clientId"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["project"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "projectId": {
+                                "type": "string"
+                              },
+                              "hours": {
+                                "type": "string"
+                              },
+                              "rate": {
+                                "type": "string"
+                              },
+                              "amount": {
+                                "type": "string"
+                              },
+                              "invoiceId": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "description",
+                              "projectId",
+                              "hours",
+                              "rate",
+                              "amount",
+                              "invoiceId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "enum": ["DRAFT"],
+                          "type": "string"
+                        },
+                        {
+                          "enum": ["SENT"],
+                          "type": "string"
+                        },
+                        {
+                          "enum": ["PAID"],
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "clientId": {
+                      "type": "string"
+                    },
+                    "dateFrom": {
+                      "type": "string"
+                    },
+                    "dateTo": {
+                      "type": "string"
+                    },
+                    "sentAt": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "paidAt": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "paidAmount": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "pdfUrl": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "totalAmount",
+                    "client",
+                    "invoiceLines",
+                    "id",
+                    "createdAt",
+                    "updatedAt",
+                    "userId",
+                    "status",
+                    "clientId",
+                    "dateFrom",
+                    "dateTo",
+                    "sentAt",
+                    "paidAt",
+                    "paidAmount",
+                    "pdfUrl"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Invoice not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteInvoice",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Delete a draft invoice and unlock associated time entries.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "enum": ["Invoice deleted successfully"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "enum": ["Only draft invoices can be deleted"],
+                            "type": "string"
+                          },
+                          "cause": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "enum": ["api/invoice-not-deletable"],
+                                "type": "string"
+                              },
+                              "detail": {
+                                "enum": [
+                                  "Invoice must be in DRAFT status to be deleted"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": ["code", "detail"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["message", "cause"],
+                        "additionalProperties": false
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Invoice not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/invoices/{id}/status": {
+      "patch": {
+        "operationId": "updateInvoiceStatus",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Update invoice status (forward transitions only: draft → sent → paid).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["status"],
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["SENT", "PAID"]
+                  },
+                  "paidAmount": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "client": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "email": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "email",
+                            "createdAt",
+                            "updatedAt",
+                            "userId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "invoiceLines": {
+                          "type": "array",
+                          "items": {
+                            "allOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "project": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      },
+                                      "userId": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "hourlyRate": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "clientId": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "userId",
+                                      "description",
+                                      "hourlyRate",
+                                      "clientId"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "required": ["project"],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "projectId": {
+                                    "type": "string"
+                                  },
+                                  "hours": {
+                                    "type": "string"
+                                  },
+                                  "rate": {
+                                    "type": "string"
+                                  },
+                                  "amount": {
+                                    "type": "string"
+                                  },
+                                  "invoiceId": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "description",
+                                  "projectId",
+                                  "hours",
+                                  "rate",
+                                  "amount",
+                                  "invoiceId"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "required": ["client", "invoiceLines"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "anyOf": [
+                            {
+                              "enum": ["DRAFT"],
+                              "type": "string"
+                            },
+                            {
+                              "enum": ["SENT"],
+                              "type": "string"
+                            },
+                            {
+                              "enum": ["PAID"],
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "clientId": {
+                          "type": "string"
+                        },
+                        "dateFrom": {
+                          "type": "string"
+                        },
+                        "dateTo": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "paidAt": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "paidAmount": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "pdfUrl": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "createdAt",
+                        "updatedAt",
+                        "userId",
+                        "status",
+                        "clientId",
+                        "dateFrom",
+                        "dateTo",
+                        "sentAt",
+                        "paidAt",
+                        "paidAmount",
+                        "pdfUrl"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string"
+                          },
+                          "cause": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "enum": ["api/invalid-status-transition"],
+                                "type": "string"
+                              },
+                              "detail": {
+                                "enum": [
+                                  "Status can only transition forward: DRAFT → SENT → PAID"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": ["code", "detail"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["message", "cause"],
+                        "additionalProperties": false
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Invoice not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/invoices/{id}/pdf": {
+      "post": {
+        "operationId": "generateInvoicePdf",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Generate and get download link for invoice PDF.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pdfUrl": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "enum": ["PDF generation initiated"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["pdfUrl", "message"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Invoice not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UnauthorizedErr": {
+        "type": "object",
+        "required": ["type", "title"],
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "string",
+            "enum": ["Unauthorized"]
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "JsonValue": {
+        "type": "object",
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "object"
+            },
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
