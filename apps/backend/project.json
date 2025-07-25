@@ -18,6 +18,7 @@
         "format": ["esm"],
         "main": "apps/backend/src/server.ts",
         "tsConfig": "apps/backend/tsconfig.app.json",
+        "assets": ["./openapi.json"],
         "esbuildOptions": {
           "banner": {
             "js": "import { createRequire } from 'node:module'; const require = createRequire(import.meta.url);"

@@ -1,3 +1,4 @@
+import { serveStatic } from '@hono/node-server/serve-static';
 import { Prisma } from '@prisma/client';
 import { Hono } from 'hono';
 import { contextStorage } from 'hono/context-storage';
@@ -35,6 +36,14 @@ app.get('/api/info', verifyToken(), async (c) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+app.use(
+  '/openapi.json',
+  serveStatic({
+    path: './openapi.json',
+    rewriteRequestPath: () => '/openapi.json',
+  }),
+);
 
 for await (const route of [
   import('./routes/clients.route.ts'),
