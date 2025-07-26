@@ -10,12 +10,10 @@ import { timing } from 'hono/timing';
 
 import { auth } from '@iworked/auth';
 
-import { verifyToken } from './middlewares/auth.ts';
-
 const app = new Hono().use(
   logger(),
   timing(),
-  cors({ origin: 'http://localhost:5173', credentials: true }),
+  cors({ origin: process.env.FRONTEND_URL, credentials: true }),
   requestId(),
   contextStorage(),
 );
@@ -27,14 +25,6 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
 // Health check endpoint
 app.get('/api/health', (c) => {
   return c.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// Protected API info endpoint
-app.get('/api/info', verifyToken(), async (c) => {
-  return c.json({
-    user: c.var.subject,
-    timestamp: new Date().toISOString(),
-  });
 });
 
 app.use(
@@ -51,6 +41,8 @@ for await (const route of [
   import('./routes/time-entries.route.ts'),
   import('./routes/reports.route.ts'),
   import('./routes/invoices.route.ts'),
+  // always import the ui route last to ensure it catches all unmatched routes
+  import('./routes/ui.route.ts'),
 ]) {
   route.default(app);
 }

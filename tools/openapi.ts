@@ -62,7 +62,7 @@ const { paths, components, tags } = await analyze(
 
 const spec: Parameters<typeof generate>[0] = {
   openapi: '3.1.0',
-  info: { title: 'Virtual Care API', version: '1.0.0' },
+  info: { title: 'IWorked API', version: '1.0.0' },
   servers: [
     {
       url: '/',
@@ -134,7 +134,7 @@ await writeFile('openapi.json', JSON.stringify(spec, null, 2));
 await generate(spec, {
   mode: 'minimal',
   output: join(process.cwd(), 'packages/client/src'),
-  name: 'Agentic',
+  name: 'IWorked',
   readme: true,
   pagination: false,
   formatCode: ({ output, env }) => {

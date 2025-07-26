@@ -1,19 +1,19 @@
-# Virtual Care API TypeScript SDK
+# IWorked API TypeScript SDK
 
 A fully-typed TypeScript SDK with comprehensive IntelliSense support, automatic request/response validation, and modern async/await patterns. Built for seamless integration with TypeScript and JavaScript projects. Each endpoint includes a brief description, example usage, and details about request and response formats.
 
 ## Installation
 
 ```bash
-npm install @agentic/sdk
+npm install @iworked/sdk
 ```
 
 ## Basic Usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
@@ -33,7 +33,7 @@ You can update client configuration after initialization using the `setOptions` 
 
 ```typescript
 // Initial client setup
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: 'https://api.production-service.com',
   token: 'prod_sk_1234567890abcdef',
 });
@@ -56,7 +56,7 @@ The SDK requires authentication to access the API. Configure your client with th
 Pass your bearer token directly - the "Bearer" prefix is automatically added:
 
 ```typescript
-const agentic = new Agentic({
+const iWorked = new IWorked({
   token: 'sk_live_51234567890abcdef1234567890abcdef',
 });
 ```
@@ -77,10 +77,10 @@ import {
   ParseError,
   TooManyRequests,
   Unauthorized,
-} from '@agentic/sdk';
+} from '@iworked/sdk';
 
 try {
-  const usersList = await agentic.request('GET /users', {});
+  const usersList = await iWorked.request('GET /users', {});
   // Handle successful response
 } catch (error) {
   // Handle different error types
@@ -147,11 +147,11 @@ Validation errors (422) include detailed field-level error information:
 When request input fails validation against the API schema, a `ParseError` is thrown:
 
 ```typescript
-import { ParseError } from '@agentic/sdk';
+import { ParseError } from '@iworked/sdk';
 
 try {
   // Invalid input that doesn't match the expected schema
-  const newUser = await agentic.request('POST /users', {
+  const newUser = await iWorked.request('POST /users', {
     email: 123,
     firstName: '',
     age: -5,
@@ -188,10 +188,10 @@ try {
 Rate limit responses may include a `retryAfter` field indicating when to retry:
 
 ```typescript
-import { TooManyRequests } from '@agentic/sdk';
+import { TooManyRequests } from '@iworked/sdk';
 
 try {
-  const apiResponse = await agentic.request('GET /api/data', {});
+  const apiResponse = await iWorked.request('GET /api/data', {});
 } catch (error) {
   if (error instanceof TooManyRequests) {
     const retryAfterSeconds = error.data.retryAfter;
@@ -213,14 +213,14 @@ try {
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('POST /api/clients', {
+const result = await iWorked.request('POST /api/clients', {
   name: 'example',
   email: 'user@example.com',
 });
@@ -259,14 +259,14 @@ Content Type: `application/json`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/clients', {});
+const result = await iWorked.request('GET /api/clients', {});
 
 console.log(result.data);
 ```
@@ -302,14 +302,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/clients/{id}', {});
+const result = await iWorked.request('GET /api/clients/{id}', {});
 
 console.log(result.data);
 ```
@@ -351,15 +351,16 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('PATCH /api/clients/{id}', {
+const result = await iWorked.request('PATCH /api/clients/{id}', {
   name: 'example',
+  email: 'user@example.com',
 });
 
 console.log(result.data);
@@ -402,16 +403,16 @@ Content Type: `application/json`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('POST /api/projects', {
+const result = await iWorked.request('POST /api/projects', {
   name: 'example',
-  hourlyRate: 1,
+  description: 'example',
   clientId: '123e4567-e89b-12d3-a456-426614174000',
 });
 
@@ -455,14 +456,14 @@ Content Type: `application/json`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/projects', {});
+const result = await iWorked.request('GET /api/projects', {});
 
 console.log(result.data);
 ```
@@ -498,14 +499,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/projects/{id}', {});
+const result = await iWorked.request('GET /api/projects/{id}', {});
 
 console.log(result.data);
 ```
@@ -547,14 +548,15 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('PATCH /api/projects/{id}', {
+const result = await iWorked.request('PATCH /api/projects/{id}', {
+  name: 'example',
   hourlyRate: 1,
 });
 
@@ -598,17 +600,16 @@ Content Type: `application/json`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('POST /api/time-entries', {
+const result = await iWorked.request('POST /api/time-entries', {
   startedAt: '2025-07-17T09:08:00.097Z',
   endedAt: '2025-07-17T09:08:00.097Z',
-  note: 'example',
   projectId: '123e4567-e89b-12d3-a456-426614174000',
 });
 
@@ -652,14 +653,14 @@ Content Type: `application/json`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/time-entries', {});
+const result = await iWorked.request('GET /api/time-entries', {});
 
 console.log(result.data);
 ```
@@ -695,14 +696,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/time-entries/{id}', {});
+const result = await iWorked.request('GET /api/time-entries/{id}', {});
 
 console.log(result.data);
 ```
@@ -744,14 +745,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('PATCH /api/time-entries/{id}', {
+const result = await iWorked.request('PATCH /api/time-entries/{id}', {
   endedAt: '2025-07-17T09:08:00.097Z',
   note: 'example',
 });
@@ -796,14 +797,14 @@ Content Type: `application/json`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('DELETE /api/time-entries/{id}', {});
+const result = await iWorked.request('DELETE /api/time-entries/{id}', {});
 
 console.log(result.data);
 ```
@@ -845,14 +846,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/reports/summary', {});
+const result = await iWorked.request('GET /api/reports/summary', {});
 
 console.log(result.data);
 ```
@@ -888,14 +889,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/reports/detailed', {});
+const result = await iWorked.request('GET /api/reports/detailed', {});
 
 console.log(result.data);
 ```
@@ -931,14 +932,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('POST /api/invoices', {
+const result = await iWorked.request('POST /api/invoices', {
   clientId: '123e4567-e89b-12d3-a456-426614174000',
   dateFrom: '2025-07-17T09:08:00.097Z',
   dateTo: '2025-07-17T09:08:00.097Z',
@@ -984,14 +985,14 @@ Content Type: `application/json`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/invoices', {});
+const result = await iWorked.request('GET /api/invoices', {});
 
 console.log(result.data);
 ```
@@ -1027,14 +1028,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('GET /api/invoices/{id}', {});
+const result = await iWorked.request('GET /api/invoices/{id}', {});
 
 console.log(result.data);
 ```
@@ -1076,14 +1077,14 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('DELETE /api/invoices/{id}', {});
+const result = await iWorked.request('DELETE /api/invoices/{id}', {});
 
 console.log(result.data);
 ```
@@ -1125,16 +1126,15 @@ Content Type: `application/empty`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('PATCH /api/invoices/{id}/status', {
+const result = await iWorked.request('PATCH /api/invoices/{id}/status', {
   status: 'SENT',
-  paidAmount: 1,
 });
 
 console.log(result.data);
@@ -1177,14 +1177,14 @@ Content Type: `application/json`
 #### Example usage
 
 ```typescript
-import { Agentic } from '@agentic/sdk';
+import { IWorked } from '@iworked/sdk';
 
-const agentic = new Agentic({
+const iWorked = new IWorked({
   baseUrl: '/',
   token: '"<token>"',
 });
 
-const result = await agentic.request('POST /api/invoices/{id}/pdf', {});
+const result = await iWorked.request('POST /api/invoices/{id}/pdf', {});
 
 console.log(result.data);
 ```

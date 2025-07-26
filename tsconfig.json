@@ -20,6 +20,9 @@
     },
     {
       "path": "./packages/auth"
+    },
+    {
+      "path": "./apps/frontend"
     }
   ]
 }

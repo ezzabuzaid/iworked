@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Virtual Care API",
+    "title": "IWorked API",
     "version": "1.0.0"
   },
   "servers": [

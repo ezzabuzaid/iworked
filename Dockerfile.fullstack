@@ -16,6 +16,7 @@ ENV VITE_API_URL=/
 ENV NX_DAEMON=false
 RUN --mount=type=cache,id=nx,target=/app/.nx ./node_modules/.bin/nx run-many --targets build --projects backend,frontend --prod
 
+
 FROM builder AS intermediate
 WORKDIR /app
 RUN mkdir -p all-dists \
@@ -28,8 +29,8 @@ FROM base AS start
 WORKDIR /app
 
 COPY --from=intermediate /app/all-dists ./packages
-COPY --from=builder /app/apps/frontend/dist ./apps/frontend/dist
-COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
+COPY --from=builder /app/apps/frontend/dist ./apps/doctfrontendor/dist
+COPY --from=builder  /app/apps/backend/package.json ./apps/backend/package.json
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 
 COPY --from=builder /app/package.json ./package.json
@@ -40,6 +41,8 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 RUN tree -d /app
 
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
 USER node
 EXPOSE 3000
 HEALTHCHECK CMD wget --no-verbose --spider --tries=1 http://localhost:3000 || exit 1

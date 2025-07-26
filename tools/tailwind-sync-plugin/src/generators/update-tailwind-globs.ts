@@ -41,7 +41,7 @@ export default async function updateTailwindGlobsGenerator(
         project.data.name &&
         UI_PACKAGES.includes(project.data.name)
       ) {
-        const relativePath = join('../../', project.data.root);
+        const relativePath = join('../../../', project.data.root);
         sourceDirectives.push(`@source "${relativePath}";`);
       }
     });
@@ -50,7 +50,6 @@ export default async function updateTailwindGlobsGenerator(
     sourceDirectives.sort();
 
     const stylesPath = join(src, 'styles.css');
-    console.log(`Processing ${stylesPath} for project ${name}...`);
     const currentContent = tree.read(stylesPath)?.toString() || '';
 
     const importIndex = currentContent.indexOf(`@import 'tailwindcss';`);

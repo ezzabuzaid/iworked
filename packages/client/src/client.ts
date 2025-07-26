@@ -24,11 +24,11 @@ const optionsSchema = z.object({
 });
 export type Servers = (typeof servers)[number];
 
-type AgenticOptions = z.infer<typeof optionsSchema>;
+type IWorkedOptions = z.infer<typeof optionsSchema>;
 
-export class Agentic {
-  public options: AgenticOptions;
-  constructor(options: AgenticOptions) {
+export class IWorked {
+  public options: IWorkedOptions;
+  constructor(options: IWorkedOptions) {
     this.options = optionsSchema.parse(options);
   }
 
@@ -104,10 +104,10 @@ export class Agentic {
     return {};
   }
 
-  setOptions(options: Partial<AgenticOptions>) {
+  setOptions(options: Partial<IWorkedOptions>) {
     const validated = optionsSchema.partial().parse(options);
 
-    for (const key of Object.keys(validated) as (keyof AgenticOptions)[]) {
+    for (const key of Object.keys(validated) as (keyof IWorkedOptions)[]) {
       if (validated[key] !== undefined) {
         (this.options[key] as (typeof validated)[typeof key]) = validated[key]!;
       }

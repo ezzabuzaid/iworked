@@ -7,6 +7,8 @@ import { parse } from './middlewares/validator.ts';
 const env = z.object({
   CONNECTION_STRING: z.string(),
   NODE_ENV: z.enum(['development', 'production']),
+  FRONTEND_URL: z.string().url(),
+  CHAT_API_KEY: z.string(),
 });
 
 try {

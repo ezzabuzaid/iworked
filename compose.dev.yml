@@ -8,9 +8,9 @@ services:
     environment:
       POSTGRES_PASSWORD: 'yourpassword'
       POSTGRES_USER: 'youruser'
-      POSTGRES_DB: 'virtual_care'
+      POSTGRES_DB: 'iworked'
     healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'virtual_care']
+      test: ['CMD', 'pg_isready', '-U', 'iworked']
     networks:
       - local_network
 volumes:

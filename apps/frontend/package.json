@@ -1,0 +1,14 @@
+{
+  "name": "frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {},
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "nx": {
+    "name": "frontend"
+  },
+  "dependencies": {}
+}
