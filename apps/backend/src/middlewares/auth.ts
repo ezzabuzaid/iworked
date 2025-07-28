@@ -1,8 +1,8 @@
-import type { Project } from '@prisma/client';
 import type { MiddlewareHandler } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 
 import { auth } from '@iworked/auth';
+import type { Project } from '@iworked/db';
 
 type Session = typeof auth.$Infer.Session.session;
 type User = typeof auth.$Infer.Session.user & { projects: Project[] };

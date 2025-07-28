@@ -7,20 +7,27 @@ services:
       PORT: 3000
       PROJECT_SPEC: http://backend:3000/openapi.json
       PROJECT_API_URL: http://backend:3000
+      CONNECTION_STRING: postgresql://youruser:yourpassword@database:5432/agent
     env_file:
       - .env.agent
     ports:
       - '1420:3000'
     healthcheck:
       test: 'wget --no-verbose --spider --tries=1 http://localhost:3000/health || exit 1'
-
     networks:
       - app_network
-
+    depends_on:
+      - migration
+      - database
   migration:
-    image: ghcr.io/januarylabs/agentize:latest
+    image: ghcr.io/januarylabs/agentize-migration:latest
     platform: linux/amd64
-    command: sh -c 'npx prisma migrate deploy --schema=/app/'
+    depends_on:
+      - database
+    environment:
+      - CONNECTION_STRING=postgresql://youruser:yourpassword@database:5432/agent
+    networks:
+      - app_network
     env_file:
       - .env.agent
   backend:
@@ -39,6 +46,24 @@ services:
       test: 'wget --no-verbose --spider --tries=1 http://localhost:3000/health || exit 1'
     networks:
       - app_network
-
+    depends_on:
+      - agent
+  database:
+    image: 'postgres:16'
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'postgres_data:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_PASSWORD: 'yourpassword'
+      POSTGRES_USER: 'youruser'
+      POSTGRES_DB: 'agent'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'agent']
+    networks:
+      - app_network
 networks:
   app_network:
+
+volumes:
+  postgres_data: {}

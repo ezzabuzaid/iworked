@@ -1,8 +1,8 @@
-import type { Prisma } from '@prisma/client';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 
+import type { Prisma } from '@iworked/db';
 import { prisma } from '@iworked/db';
 
 import { verifyToken } from '../middlewares/auth.ts';

@@ -1,5 +1,4 @@
 import { serveStatic } from '@hono/node-server/serve-static';
-import { Prisma } from '@prisma/client';
 import { Hono } from 'hono';
 import { contextStorage } from 'hono/context-storage';
 import { cors } from 'hono/cors';
@@ -9,6 +8,7 @@ import { requestId } from 'hono/request-id';
 import { timing } from 'hono/timing';
 
 import { auth } from '@iworked/auth';
+import { Prisma } from '@iworked/db';
 
 const app = new Hono().use(
   logger(),
