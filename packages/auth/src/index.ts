@@ -14,7 +14,6 @@ async function getChatSessionId(
   token: string,
   userId: string,
 ): Promise<string> {
-  console.log(process.env);
   const res = await fetch(`${process.env.AGENT_BASE_URL}/api/chat-session`, {
     method: 'POST',
     headers: {
@@ -35,18 +34,12 @@ export const chatSync = (): BetterAuthPlugin => ({
         matcher: (ctx) =>
           ctx.path.startsWith('/sign-in') || ctx.path.startsWith('/sign-up'),
         handler: createAuthMiddleware(async (ctx) => {
-          const token = ctx.context.responseHeaders?.get('set-auth-token'); // now defined
+          const token = ctx.context.responseHeaders?.get('set-auth-token');
           const userId = ctx.context.newSession?.user.id;
           if (!token) return;
           if (!userId) return;
-
           const chatId = await getChatSessionId(token, userId);
-          ctx.setCookie('chat_session_id', chatId, {
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 24 * 7,
-          });
+          return ctx.json({ chatSessionId: chatId });
         }),
       },
     ],
@@ -58,7 +51,11 @@ const options = {
     provider: 'postgresql',
     debugLogs: false,
   }),
-  trustedOrigins: ['http://localhost:1421', 'https://iworked.fly.dev'],
+  trustedOrigins: [
+    'http://localhost:1421',
+    'http://localhost:3000',
+    'https://iworked.fly.dev',
+  ],
   emailAndPassword: {
     enabled: true,
     disableSignUp: false, // let's not support sign up via email for now

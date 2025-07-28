@@ -13,7 +13,10 @@ import { Prisma } from '@iworked/db';
 const app = new Hono().use(
   logger(),
   timing(),
-  cors({ origin: () => process.env.FRONTEND_URL, credentials: true }),
+  cors({
+    origin: () => process.env.FRONTEND_URL,
+    credentials: true,
+  }),
   requestId(),
   contextStorage(),
 );

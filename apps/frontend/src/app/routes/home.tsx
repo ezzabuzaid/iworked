@@ -1,4 +1,5 @@
 import { Agent } from '@sdk-it/march';
+import { useLocalStorage } from '@uidotdev/usehooks';
 import * as Icons from 'lucide-react';
 
 import { authClient } from '../auth-client.tsx';
@@ -16,8 +17,11 @@ const anonymousSuggestions = [
           {},
           {
             throw: true,
-            async onSuccess(context) {
-              window.location.reload();
+            onSuccess: async (ctx) => {
+              localStorage.setItem(
+                'chatSessionId',
+                JSON.stringify(ctx.data.chatSessionId),
+              );
             },
           },
         );
@@ -41,9 +45,6 @@ const logoutSuggestions = [
         await authClient.signOut({
           fetchOptions: {
             throw: true,
-            onSuccess: () => {
-              window.location.reload();
-            },
           },
         });
         yield { loading: false, error: null };
@@ -57,13 +58,14 @@ const logoutSuggestions = [
 export default function Home() {
   const session = authClient.useSession();
   console.log('Session:', session.data, import.meta.env);
+  const [chatSessionId] = useLocalStorage('chatSessionId', '');
   return (
     <Agent
       title={'IWorked Agent'}
       description={'Ask questions about your projects, clients, and tasks.'}
       baseUrl={import.meta.env.VITE_AGENT_BASE_URL}
       suggestions={session.data ? logoutSuggestions : anonymousSuggestions}
-      sessionId={(session.data as any)?.chatSessionId}
+      sessionId={chatSessionId}
     />
   );
 }
