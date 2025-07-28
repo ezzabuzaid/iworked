@@ -13,7 +13,7 @@ import { auth } from '@iworked/auth';
 const app = new Hono().use(
   logger(),
   timing(),
-  cors({ origin: process.env.FRONTEND_URL, credentials: true }),
+  cors({ origin: () => process.env.FRONTEND_URL, credentials: true }),
   requestId(),
   contextStorage(),
 );
@@ -60,7 +60,7 @@ app.notFound((c) => {
 
 app.onError((error, context) => {
   if (process.env.NODE_ENV === 'development') {
-    console.error(error);
+    console.dir(error, { depth: Infinity });
   }
   if (error instanceof HTTPException) {
     return context.json(
