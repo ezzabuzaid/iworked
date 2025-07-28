@@ -51,11 +51,6 @@ COPY --from=builder /app/package.json /app/package-lock.json ./
 RUN npm config set registry https://registry.npmjs.org/
 RUN --mount=type=cache,id=prod-deps,target=/root/.npm npm ci --legacy-peer-deps --omit=dev --ignore-scripts
 
-# Copy generated prisma client to the newly created node_modules from above run
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-
-RUN tree -d /app
-
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000

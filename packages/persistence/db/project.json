@@ -9,7 +9,9 @@
       "dependsOn": ["generate-types"],
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
-      "options": {}
+      "options": {
+        "bundle": false
+      }
     },
     "prisma": {
       "command": "prisma",
