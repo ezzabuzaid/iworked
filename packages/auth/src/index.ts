@@ -10,17 +10,18 @@ import {
 
 import { prisma } from '@iworked/db';
 
-async function getChatSessionId(token: string): Promise<string> {
-  const res = await fetch('http://localhost:3100/api/chat-session', {
+async function getChatSessionId(
+  token: string,
+  userId: string,
+): Promise<string> {
+  console.log(process.env);
+  const res = await fetch(`${process.env.AGENT_BASE_URL}/api/chat-session`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': process.env.CHAT_API_KEY!,
     },
-    body: JSON.stringify({
-      userId: 'user-id',
-      token,
-    }),
+    body: JSON.stringify({ userId, token }),
   });
   const data = (await res.json()) as { token: string };
   return data.token;
@@ -35,9 +36,11 @@ export const chatSync = (): BetterAuthPlugin => ({
           ctx.path.startsWith('/sign-in') || ctx.path.startsWith('/sign-up'),
         handler: createAuthMiddleware(async (ctx) => {
           const token = ctx.context.responseHeaders?.get('set-auth-token'); // now defined
+          const userId = ctx.context.newSession?.user.id;
           if (!token) return;
+          if (!userId) return;
 
-          const chatId = await getChatSessionId(token);
+          const chatId = await getChatSessionId(token, userId);
           ctx.setCookie('chat_session_id', chatId, {
             httpOnly: true,
             sameSite: 'lax',

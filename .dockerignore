@@ -6,7 +6,7 @@
 **/.idea
 **/npm-debug.log
 **/coverage*
-**/.env
+**/.env*
 **/.editorconfig
 **/.aws
 **/dist

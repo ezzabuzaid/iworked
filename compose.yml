@@ -1,0 +1,44 @@
+services:
+  agent:
+    image: ghcr.io/januarylabs/agentize:latest
+    platform: linux/amd64
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      PROJECT_SPEC: http://backend:3000/openapi.json
+      PROJECT_API_URL: http://backend:3000
+    env_file:
+      - .env.agent
+    ports:
+      - '1420:3000'
+    healthcheck:
+      test: 'wget --no-verbose --spider --tries=1 http://localhost:3000/health || exit 1'
+
+    networks:
+      - app_network
+
+  migration:
+    image: ghcr.io/januarylabs/agentize:latest
+    platform: linux/amd64
+    command: sh -c 'npx prisma migrate deploy --schema=/app/'
+    env_file:
+      - .env.agent
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.fullstack
+      args:
+        AGENT_BASE_URL: http://localhost:1420
+    env_file:
+      - ./apps/backend/.env
+    environment:
+      - AGENT_BASE_URL=http://agent:3000
+    ports:
+      - '1421:3000'
+    healthcheck:
+      test: 'wget --no-verbose --spider --tries=1 http://localhost:3000/health || exit 1'
+    networks:
+      - app_network
+
+networks:
+  app_network:

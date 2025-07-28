@@ -1,41 +1,57 @@
 #syntax=docker/dockerfile:1.7-labs
+
 FROM node:lts-alpine AS base
 
 FROM base AS builder
 WORKDIR /app
-COPY .npmrc .
-COPY package-lock.json* .
+COPY .npmrc package-lock.json package.json ./
 COPY --parents **/package.json .
 
-# Cache .nx directory to speed up builds
-RUN --mount=type=cache,target=/root/.npm npm install
+# Cache .nx directory so it retrive from cache next time
+RUN --mount=type=cache,target=/root/.npm npm ci --legacy-peer-deps
 COPY . .
 
 # Keep the API URL empty to use the same host
 ENV VITE_API_URL=/
 ENV NX_DAEMON=false
-RUN --mount=type=cache,id=nx,target=/app/.nx ./node_modules/.bin/nx run-many --targets build --projects backend,frontend --prod
+RUN --mount=type=cache,id=nx,target=/app/.nx ./node_modules/.bin/nx run-many -t build --projects backend,frontend -c production
 
 
-FROM builder AS intermediate
+FROM builder AS packages
 WORKDIR /app
-RUN mkdir -p all-dists \
- && for d in packages/*/dist; do \
-      pkg=$(basename $(dirname "$d")); \
-      cp -r "$d" "all-dists/$pkg"; \
+RUN mkdir -p all-dists
+RUN find packages -name dist -type d | while read d; do \
+      # Get the relative path from packages/ and remove /dist suffix
+      pkg_path=$(echo "$d" | sed 's|^packages/||' | sed 's|/dist||'); \
+      mkdir -p "all-dists/$pkg_path"; \
+      cp -r "$d"/* "all-dists/$pkg_path/"; \
+    done
+RUN find packages -path "*/src/prisma" -type d | while read p; do \
+      # Get the relative path from packages/ and copy src/prisma
+      pkg_path=$(echo "$p" | sed 's|^packages/||' | sed 's|/src/prisma||'); \
+      mkdir -p "all-dists/$pkg_path/src"; \
+      cp -r "$p" "all-dists/$pkg_path/src/"; \
     done
 
 FROM base AS start
 WORKDIR /app
 
-COPY --from=intermediate /app/all-dists ./packages
-COPY --from=builder /app/apps/frontend/dist ./apps/doctfrontendor/dist
-COPY --from=builder  /app/apps/backend/package.json ./apps/backend/package.json
+COPY --from=packages /app/all-dists ./packages
+
+# Frontend APPS
+COPY --from=builder /app/apps/frontend/dist ./apps/frontend/dist
+
+
+# Backend APPS
+COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 
-COPY --from=builder /app/package.json ./package.json
-RUN --mount=type=cache,id=prod-deps,target=/root/.npm npm install --legacy-peer-deps --omit=dev --ignore-scripts
+# Install production dependencies
+COPY --from=builder /app/package.json /app/package-lock.json ./
+RUN npm config set registry https://registry.npmjs.org/
+RUN --mount=type=cache,id=prod-deps,target=/root/.npm npm ci --legacy-peer-deps --omit=dev --ignore-scripts
 
+# Copy generated prisma client to the newly created node_modules from above run
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 RUN tree -d /app

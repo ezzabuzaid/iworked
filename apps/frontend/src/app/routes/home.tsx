@@ -1,4 +1,4 @@
-import { Agent } from '@agent/react';
+import { Agent } from '@sdk-it/march';
 import * as Icons from 'lucide-react';
 
 import { authClient } from '../auth-client.tsx';
@@ -56,12 +56,12 @@ const logoutSuggestions = [
 
 export default function Home() {
   const session = authClient.useSession();
-  console.log('Session:', session.data);
+  console.log('Session:', session.data, import.meta.env);
   return (
     <Agent
       title={'IWorked Agent'}
       description={'Ask questions about your projects, clients, and tasks.'}
-      baseUrl={'http://localhost:3100'}
+      baseUrl={import.meta.env.VITE_AGENT_BASE_URL}
       suggestions={session.data ? logoutSuggestions : anonymousSuggestions}
       sessionId={(session.data as any)?.chatSessionId}
     />
