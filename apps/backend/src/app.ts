@@ -1,3 +1,5 @@
+import { relative } from 'node:path';
+
 import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import { contextStorage } from 'hono/context-storage';
@@ -33,6 +35,7 @@ app.get('/api/health', (c) => {
 app.use(
   '/openapi.json',
   serveStatic({
+    root: relative(process.cwd(), import.meta.dirname),
     path: './openapi.json',
     rewriteRequestPath: () => '/openapi.json',
   }),

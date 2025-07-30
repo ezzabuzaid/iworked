@@ -1,12 +1,7 @@
 import type { BetterAuthPlugin } from 'better-auth';
 import { type BetterAuthOptions, betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import {
-  anonymous,
-  bearer,
-  createAuthMiddleware,
-  customSession,
-} from 'better-auth/plugins';
+import { anonymous, bearer, createAuthMiddleware } from 'better-auth/plugins';
 
 import { prisma } from '@iworked/db';
 
@@ -63,18 +58,7 @@ const options = {
     requireEmailVerification: true, // block login until verified
     minPasswordLength: 8,
   },
-  plugins: [
-    bearer(),
-    chatSync(),
-    anonymous(),
-    customSession(async ({ user, session }, ctx) => {
-      return {
-        chatSessionId: ctx.getCookie('chat_session_id'),
-        user,
-        session,
-      };
-    }),
-  ],
+  plugins: [bearer(), chatSync(), anonymous()],
 } satisfies BetterAuthOptions;
 
 export const auth: ReturnType<typeof betterAuth<BetterAuthOptions>> =

@@ -1,4 +1,63 @@
 services:
+  agent:
+    # image: ghcr.io/januarylabs/agentize:latest
+    build:
+      context: /Users/ezzabuzaid/Desktop/mo/pm
+      dockerfile: /Users/ezzabuzaid/Desktop/mo/pm/Dockerfile
+    platform: linux/amd64
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      PROJECT_SPEC: http://backend:3000/openapi.json
+      PROJECT_API_URL: http://backend:3000
+      CONNECTION_STRING: 'postgresql://youruser:yourpassword@database:5432/agent?schema=agent'
+    env_file:
+      - .env.agent
+    ports:
+      - '1420:3000'
+    healthcheck:
+      test: 'wget --no-verbose --spider --tries=1 http://localhost:3000/health || exit 1'
+    networks:
+      - app_network
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+      database:
+        condition: service_healthy
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.fullstack
+      args:
+        AGENT_BASE_URL: http://localhost:1420
+    env_file:
+      - ./apps/backend/.env
+    environment:
+      AGENT_BASE_URL: http://agent:3000
+      CONNECTION_STRING: 'postgresql://youruser:yourpassword@database:5432/agent?schema=app'
+    ports:
+      - '1421:3000'
+    healthcheck:
+      test: 'wget --no-verbose --spider --tries=1 http://localhost:3000/health || exit 1'
+    networks:
+      - app_network
+    depends_on:
+      agent:
+        condition: service_healthy
+  migration:
+    build:
+      context: /Users/ezzabuzaid/Desktop/mo/pm
+      dockerfile: /Users/ezzabuzaid/Desktop/mo/pm/Dockerfile.migration
+    platform: linux/amd64
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      CONNECTION_STRING: 'postgresql://youruser:yourpassword@database:5432/agent?schema=agent'
+    networks:
+      - app_network
+    env_file:
+      - .env.agent
   database:
     image: 'postgres:16'
     ports:
@@ -8,13 +67,13 @@ services:
     environment:
       POSTGRES_PASSWORD: 'yourpassword'
       POSTGRES_USER: 'youruser'
-      POSTGRES_DB: 'iworked'
+      POSTGRES_DB: 'agent'
     healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'iworked']
+      test: ['CMD', 'pg_isready', '-U', 'agent']
     networks:
-      - local_network
+      - app_network
+networks:
+  app_network:
+
 volumes:
   postgres_data: {}
-
-networks:
-  local_network:

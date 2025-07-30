@@ -8,15 +8,15 @@ COPY .npmrc package-lock.json package.json ./
 COPY --parents **/package.json .
 
 # Cache .nx directory so it retrive from cache next time
-RUN --mount=type=cache,target=/root/.npm npm ci --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
 COPY . .
 
 # Keep the API URL empty to use the same host
-ARG AGENT_BASE_URL=http://localhost:1420
-ENV VITE_AGENT_BASE_URL=$AGENT_BASE_URL
+ARG VITE_AGENT_BASE_URL=http://localhost:1420
+ENV VITE_AGENT_BASE_URL=$VITE_AGENT_BASE_URL
 ENV VITE_API_URL=/
 ENV NX_DAEMON=false
-RUN --mount=type=cache,id=nx,target=/app/.nx ./node_modules/.bin/nx run-many -t build --projects backend,frontend -c production
+RUN ./node_modules/.bin/nx run-many -t build --projects backend,frontend -c production
 
 
 FROM builder AS packages
@@ -51,7 +51,7 @@ COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
 # Install production dependencies
 COPY --from=builder /app/package.json /app/package-lock.json ./
 RUN npm config set registry https://registry.npmjs.org/
-RUN --mount=type=cache,id=prod-deps,target=/root/.npm npm ci --legacy-peer-deps --omit=dev --ignore-scripts
+RUN npm ci --legacy-peer-deps --omit=dev --ignore-scripts
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
