@@ -4,6 +4,11 @@ import { z } from 'zod';
 import type { Prisma } from '@iworked/db';
 import { prisma } from '@iworked/db';
 
+import {
+  checkDuplicateProjectName,
+  sanitizeInput,
+  validateName,
+} from '../core/validation.ts';
 import { authenticated } from '../middlewares/auth.ts';
 import { validate } from '../middlewares/validator.ts';
 
@@ -36,26 +41,30 @@ export default async function (router: Hono) {
     })),
     async (c) => {
       const { name, description, hourlyRate, clientId } = c.var.input;
+      const userId = c.var.subject.id;
+
+      // Validate and sanitize input
+      const validatedName = validateName(name, 'Project name');
+      const sanitizedDescription = sanitizeInput(description);
 
       // Verify client exists and belongs to user
-      const client = await prisma.client.findFirst({
+      await prisma.client.findUniqueOrThrow({
         where: {
           id: clientId,
-          userId: c.var.subject.id,
+          userId,
         },
       });
 
-      if (!client) {
-        return c.json({ error: 'Client not found' }, 404);
-      }
+      // Check for duplicate project name within this client
+      await checkDuplicateProjectName(userId, clientId, validatedName);
 
       const project = await prisma.project.create({
         data: {
-          name,
-          description,
+          name: validatedName,
+          description: sanitizedDescription,
           hourlyRate: hourlyRate ? hourlyRate.toString() : null,
           clientId,
-          userId: c.var.subject.id,
+          userId,
         },
         include: {
           client: true,
@@ -142,7 +151,7 @@ export default async function (router: Hono) {
     async (c) => {
       const { id } = c.var.input;
 
-      const project = await prisma.project.findFirst({
+      const project = await prisma.project.findUniqueOrThrow({
         where: {
           id,
           userId: c.var.subject.id,
@@ -160,10 +169,6 @@ export default async function (router: Hono) {
           },
         },
       });
-
-      if (!project) {
-        return c.json({ error: 'Project not found' }, 404);
-      }
 
       return c.json(project);
     },
@@ -197,24 +202,36 @@ export default async function (router: Hono) {
     })),
     async (c) => {
       const { id, name, description, hourlyRate } = c.var.input;
+      const userId = c.var.subject.id;
 
       // Check if project exists and belongs to user
-      const existingProject = await prisma.project.findFirst({
+      const existingProject = await prisma.project.findUniqueOrThrow({
         where: {
           id,
-          userId: c.var.subject.id,
+          userId,
         },
       });
 
-      if (!existingProject) {
-        return c.json({ error: 'Project not found' }, 404);
+      const updateData: Prisma.ProjectUpdateInput = {};
+
+      if (name !== undefined) {
+        const validatedName = validateName(name, 'Project name');
+        await checkDuplicateProjectName(
+          userId,
+          existingProject.clientId,
+          validatedName,
+          id,
+        );
+        updateData.name = validatedName;
       }
 
-      const updateData: Prisma.ProjectUpdateInput = {};
-      if (name !== undefined) updateData.name = name;
-      if (description !== undefined) updateData.description = description;
-      if (hourlyRate !== undefined)
+      if (description !== undefined) {
+        updateData.description = sanitizeInput(description);
+      }
+
+      if (hourlyRate !== undefined) {
         updateData.hourlyRate = hourlyRate.toString();
+      }
 
       if (Object.keys(updateData).length === 0) {
         return c.json(existingProject);

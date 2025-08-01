@@ -4,6 +4,11 @@ import { z } from 'zod';
 import type { Prisma } from '@iworked/db';
 import { prisma } from '@iworked/db';
 
+import {
+  checkDuplicateClientName,
+  sanitizeInput,
+  validateName,
+} from '../core/validation.ts';
 import { authenticated } from '../middlewares/auth.ts';
 import { validate } from '../middlewares/validator.ts';
 
@@ -28,12 +33,20 @@ export default async function (router: Hono) {
     })),
     async (c) => {
       const { name, email } = c.var.input;
+      const userId = c.var.subject.id;
+
+      // Validate and sanitize input
+      const validatedName = validateName(name, 'Client name');
+      const sanitizedEmail = sanitizeInput(email);
+
+      // Check for duplicate client name
+      await checkDuplicateClientName(userId, validatedName);
 
       const client = await prisma.client.create({
         data: {
-          name,
-          email,
-          userId: c.var.subject.id,
+          name: validatedName,
+          email: sanitizedEmail,
+          userId,
         },
       });
 
@@ -112,7 +125,7 @@ export default async function (router: Hono) {
     async (c) => {
       const { id } = c.var.input;
 
-      const client = await prisma.client.findFirst({
+      const client = await prisma.client.findUniqueOrThrow({
         where: {
           id,
           userId: c.var.subject.id,
@@ -128,10 +141,6 @@ export default async function (router: Hono) {
           },
         },
       });
-
-      if (!client) {
-        return c.json({ error: 'Client not found' }, 404);
-      }
 
       return c.json(client);
     },
@@ -161,22 +170,27 @@ export default async function (router: Hono) {
     })),
     async (c) => {
       const { id, name, email } = c.var.input;
+      const userId = c.var.subject.id;
 
       // Check if client exists and belongs to user
-      const existingClient = await prisma.client.findFirst({
+      const existingClient = await prisma.client.findUniqueOrThrow({
         where: {
           id,
-          userId: c.var.subject.id,
+          userId,
         },
       });
 
-      if (!existingClient) {
-        return c.json({ error: 'Client not found' }, 404);
+      const updateData: Prisma.ClientUpdateInput = {};
+
+      if (name !== undefined) {
+        const validatedName = validateName(name, 'Client name');
+        await checkDuplicateClientName(userId, validatedName, id);
+        updateData.name = validatedName;
       }
 
-      const updateData: Prisma.ClientUpdateInput = {};
-      if (name !== undefined) updateData.name = name;
-      if (email !== undefined) updateData.email = email;
+      if (email !== undefined) {
+        updateData.email = sanitizeInput(email);
+      }
 
       if (Object.keys(updateData).length === 0) {
         return c.json(existingClient);

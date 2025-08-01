@@ -5,6 +5,7 @@ import { z } from 'zod';
 import type { Prisma } from '@iworked/db';
 import { prisma } from '@iworked/db';
 
+import { getNextInvoiceNumber } from '../core/invoice-numbering.ts';
 import { authenticated } from '../middlewares/auth.ts';
 import { validate } from '../middlewares/validator.ts';
 
@@ -48,16 +49,12 @@ export default async function (router: Hono) {
       }
 
       // Verify client exists and belongs to user
-      const client = await prisma.client.findFirst({
+      await prisma.client.findUniqueOrThrow({
         where: {
           id: clientId,
           userId: c.var.subject.id,
         },
       });
-
-      if (!client) {
-        return c.json({ error: 'Client not found' }, 404);
-      }
 
       // Get unlocked time entries for the client within the date range
       const timeEntries = await prisma.timeEntry.findMany({
@@ -116,12 +113,15 @@ export default async function (router: Hono) {
         {} as Record<string, any>,
       );
 
-      // Create invoice in a transaction
       const result = await prisma.$transaction(async (tx) => {
+        // Generate invoice number
+        const invoiceNumber = await getNextInvoiceNumber(c.var.subject.id);
+
         // Create the invoice
         const invoice = await tx.invoice.create({
           data: {
             status: 'DRAFT',
+            invoiceNumber,
             dateFrom: startDate,
             dateTo: endDate,
             clientId,
@@ -270,7 +270,7 @@ export default async function (router: Hono) {
     async (c) => {
       const { id } = c.var.input;
 
-      const invoice = await prisma.invoice.findFirst({
+      const invoice = await prisma.invoice.findUniqueOrThrow({
         where: {
           id,
           userId: c.var.subject.id,
@@ -284,10 +284,6 @@ export default async function (router: Hono) {
           },
         },
       });
-
-      if (!invoice) {
-        return c.json({ error: 'Invoice not found' }, 404);
-      }
 
       // Calculate total amount
       const totalAmount = invoice.invoiceLines.reduce((sum, line) => {
@@ -327,16 +323,12 @@ export default async function (router: Hono) {
       const { id, status, paidAmount } = c.var.input;
 
       // Check if invoice exists and belongs to user
-      const existingInvoice = await prisma.invoice.findFirst({
+      const existingInvoice = await prisma.invoice.findUniqueOrThrow({
         where: {
           id,
           userId: c.var.subject.id,
         },
       });
-
-      if (!existingInvoice) {
-        return c.json({ error: 'Invoice not found' }, 404);
-      }
 
       // Validate status transitions (FR-8)
       const currentStatus = existingInvoice.status;
@@ -405,7 +397,7 @@ export default async function (router: Hono) {
       const { id } = c.var.input;
 
       // Check if invoice exists and belongs to user
-      const invoice = await prisma.invoice.findFirst({
+      await prisma.invoice.findUniqueOrThrow({
         where: {
           id,
           userId: c.var.subject.id,
@@ -419,10 +411,6 @@ export default async function (router: Hono) {
           },
         },
       });
-
-      if (!invoice) {
-        return c.json({ error: 'Invoice not found' }, 404);
-      }
 
       // For MVP, return a placeholder PDF URL (FR-10)
       // In production, this would integrate with a PDF generation service
@@ -459,7 +447,7 @@ export default async function (router: Hono) {
       const { id } = c.var.input;
 
       // Check if invoice exists and belongs to user
-      const existingInvoice = await prisma.invoice.findFirst({
+      const existingInvoice = await prisma.invoice.findUniqueOrThrow({
         where: {
           id,
           userId: c.var.subject.id,
@@ -468,10 +456,6 @@ export default async function (router: Hono) {
           invoiceLines: true,
         },
       });
-
-      if (!existingInvoice) {
-        return c.json({ error: 'Invoice not found' }, 404);
-      }
 
       // Only allow deletion of draft invoices
       if (existingInvoice.status !== 'DRAFT') {
@@ -521,6 +505,298 @@ export default async function (router: Hono) {
       });
 
       return c.json({ message: 'Invoice deleted successfully' });
+    },
+  );
+
+  /**
+   * @openapi updateInvoice
+   * @tags invoices
+   * @description Update invoice details (DRAFT status only).
+   */
+  router.patch(
+    '/api/invoices/:id',
+    authenticated(),
+    validate((payload) => ({
+      id: {
+        select: payload.params.id,
+        against: z.string().uuid(),
+      },
+      dateFrom: {
+        select: payload.body.dateFrom,
+        against: z.string().datetime().optional(),
+      },
+      dateTo: {
+        select: payload.body.dateTo,
+        against: z.string().datetime().optional(),
+      },
+    })),
+    async (c) => {
+      const { id, dateFrom, dateTo } = c.var.input;
+
+      // Check if invoice exists and belongs to user
+      const existingInvoice = await prisma.invoice.findUniqueOrThrow({
+        where: {
+          id,
+          userId: c.var.subject.id,
+        },
+        include: {
+          invoiceLines: true,
+        },
+      });
+
+      // Only allow editing of draft invoices
+      if (existingInvoice.status !== 'DRAFT') {
+        throw new HTTPException(400, {
+          message: 'Only draft invoices can be edited',
+          cause: {
+            code: 'api/invoice-not-editable',
+            detail: 'Invoice must be in DRAFT status to be edited',
+          },
+        });
+      }
+
+      const updateData: Prisma.InvoiceUpdateInput = {};
+
+      if (dateFrom !== undefined) {
+        updateData.dateFrom = new Date(dateFrom);
+      }
+      if (dateTo !== undefined) {
+        updateData.dateTo = new Date(dateTo);
+      }
+
+      // Validate date range if both dates are provided or being updated
+      const newDateFrom = dateFrom
+        ? new Date(dateFrom)
+        : existingInvoice.dateFrom;
+      const newDateTo = dateTo ? new Date(dateTo) : existingInvoice.dateTo;
+
+      if (newDateTo <= newDateFrom) {
+        throw new HTTPException(400, {
+          message: 'End date must be after start date',
+          cause: {
+            code: 'api/invalid-date-range',
+            detail: 'dateTo must be greater than dateFrom',
+          },
+        });
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        return c.json(existingInvoice);
+      }
+
+      const invoice = await prisma.invoice.update({
+        where: { id },
+        data: updateData,
+        include: {
+          client: true,
+          invoiceLines: {
+            include: {
+              project: true,
+            },
+          },
+        },
+      });
+
+      return c.json(invoice);
+    },
+  );
+
+  /**
+   * @openapi updateInvoiceLine
+   * @tags invoices
+   * @description Update an invoice line (DRAFT invoice only).
+   */
+  router.patch(
+    '/api/invoices/:id/lines/:lineId',
+    authenticated(),
+    validate((payload) => ({
+      id: {
+        select: payload.params.id,
+        against: z.string().uuid(),
+      },
+      lineId: {
+        select: payload.params.lineId,
+        against: z.string().uuid(),
+      },
+      description: {
+        select: payload.body.description,
+        against: z.string().min(1).max(255).optional(),
+      },
+      hours: {
+        select: payload.body.hours,
+        against: z.coerce.number().positive().optional(),
+      },
+      rate: {
+        select: payload.body.rate,
+        against: z.coerce.number().positive().optional(),
+      },
+    })),
+    async (c) => {
+      const { id, lineId, description, hours, rate } = c.var.input;
+
+      // Check if invoice exists, belongs to user, and is draft
+      await prisma.invoice.findUniqueOrThrow({
+        where: {
+          id,
+          userId: c.var.subject.id,
+          status: 'DRAFT',
+        },
+      });
+
+      // Check if invoice line exists and belongs to this invoice
+      const existingLine = await prisma.invoiceLine.findUniqueOrThrow({
+        where: {
+          id: lineId,
+          invoiceId: id,
+        },
+      });
+
+      const updateData: Prisma.InvoiceLineUpdateInput = {};
+
+      if (description !== undefined) updateData.description = description;
+      if (hours !== undefined) updateData.hours = hours.toString();
+      if (rate !== undefined) updateData.rate = rate.toString();
+
+      // Calculate new amount if hours or rate changed
+      const newHours =
+        hours !== undefined ? hours : parseFloat(existingLine.hours.toString());
+      const newRate =
+        rate !== undefined ? rate : parseFloat(existingLine.rate.toString());
+      const newAmount = Math.round(newHours * newRate * 100) / 100;
+
+      if (hours !== undefined || rate !== undefined) {
+        updateData.amount = newAmount.toString();
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        return c.json(existingLine);
+      }
+
+      const invoiceLine = await prisma.invoiceLine.update({
+        where: { id: lineId },
+        data: updateData,
+        include: {
+          project: true,
+        },
+      });
+
+      return c.json(invoiceLine);
+    },
+  );
+
+  /**
+   * @openapi addInvoiceLine
+   * @tags invoices
+   * @description Add a new line to a draft invoice.
+   */
+  router.post(
+    '/api/invoices/:id/lines',
+    authenticated(),
+    validate((payload) => ({
+      id: {
+        select: payload.params.id,
+        against: z.string().uuid(),
+      },
+      description: {
+        select: payload.body.description,
+        against: z.string().min(1).max(255),
+      },
+      hours: {
+        select: payload.body.hours,
+        against: z.coerce.number().positive(),
+      },
+      rate: {
+        select: payload.body.rate,
+        against: z.coerce.number().positive(),
+      },
+      projectId: {
+        select: payload.body.projectId,
+        against: z.string().uuid(),
+      },
+    })),
+    async (c) => {
+      const { id, description, hours, rate, projectId } = c.var.input;
+
+      // Check if invoice exists, belongs to user, and is draft
+      await prisma.invoice.findUniqueOrThrow({
+        where: {
+          id,
+          userId: c.var.subject.id,
+          status: 'DRAFT',
+        },
+      });
+
+      // Verify project exists and belongs to user
+      await prisma.project.findUniqueOrThrow({
+        where: {
+          id: projectId,
+          userId: c.var.subject.id,
+        },
+      });
+
+      const amount = Math.round(hours * rate * 100) / 100;
+
+      const invoiceLine = await prisma.invoiceLine.create({
+        data: {
+          description,
+          hours: hours.toString(),
+          rate: rate.toString(),
+          amount: amount.toString(),
+          invoiceId: id,
+          projectId,
+        },
+        include: {
+          project: true,
+        },
+      });
+
+      return c.json(invoiceLine, 201);
+    },
+  );
+
+  /**
+   * @openapi deleteInvoiceLine
+   * @tags invoices
+   * @description Remove a line from a draft invoice.
+   */
+  router.delete(
+    '/api/invoices/:id/lines/:lineId',
+    authenticated(),
+    validate((payload) => ({
+      id: {
+        select: payload.params.id,
+        against: z.string().uuid(),
+      },
+      lineId: {
+        select: payload.params.lineId,
+        against: z.string().uuid(),
+      },
+    })),
+    async (c) => {
+      const { id, lineId } = c.var.input;
+
+      // Check if invoice exists, belongs to user, and is draft
+      await prisma.invoice.findUniqueOrThrow({
+        where: {
+          id,
+          userId: c.var.subject.id,
+          status: 'DRAFT',
+        },
+      });
+
+      // Check if invoice line exists and belongs to this invoice
+      await prisma.invoiceLine.findUniqueOrThrow({
+        where: {
+          id: lineId,
+          invoiceId: id,
+        },
+      });
+
+      await prisma.invoiceLine.delete({
+        where: { id: lineId },
+      });
+
+      return c.json({ message: 'Invoice line deleted successfully' });
     },
   );
 }
