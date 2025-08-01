@@ -222,6 +222,7 @@ const iWorked = new IWorked({
 
 const result = await iWorked.request('POST /api/clients', {
   name: 'example',
+  email: 'user@example.com',
 });
 
 console.log(result.data);
@@ -408,8 +409,6 @@ const iWorked = new IWorked({
 
 const result = await iWorked.request('POST /api/projects', {
   name: 'example',
-  description: 'example',
-  hourlyRate: 1,
   clientId: '123e4567-e89b-12d3-a456-426614174000',
 });
 
@@ -553,7 +552,8 @@ const iWorked = new IWorked({
 });
 
 const result = await iWorked.request('PATCH /api/projects/{id}', {
-  name: 'example',
+  description: 'example',
+  hourlyRate: 1,
 });
 
 console.log(result.data);
@@ -750,8 +750,8 @@ const iWorked = new IWorked({
 });
 
 const result = await iWorked.request('PATCH /api/time-entries/{id}', {
-  startedAt: '2025-07-17T09:08:00.097Z',
   endedAt: '2025-07-17T09:08:00.097Z',
+  note: 'example',
 });
 
 console.log(result.data);
@@ -1132,6 +1132,7 @@ const iWorked = new IWorked({
 
 const result = await iWorked.request('PATCH /api/invoices/{id}/status', {
   status: 'SENT',
+  paidAmount: 1,
 });
 
 console.log(result.data);

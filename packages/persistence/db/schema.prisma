@@ -131,7 +131,14 @@ model User {
   @@unique([email])
   @@map("user")
 }
+model Jwks {
+  id         String   @id
+  publicKey  String
+  privateKey String
+  createdAt  DateTime
 
+  @@map("jwks")
+}
 model Session {
   id        String   @id
   expiresAt DateTime

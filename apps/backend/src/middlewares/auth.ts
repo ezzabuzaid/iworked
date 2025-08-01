@@ -1,19 +1,32 @@
+import type { Session, User } from 'better-auth';
 import type { MiddlewareHandler } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 
 import { auth } from '@iworked/auth';
-import type { Project } from '@iworked/db';
 
-type Session = typeof auth.$Infer.Session.session;
-type User = typeof auth.$Infer.Session.user & { projects: Project[] };
-export function verifyToken(): MiddlewareHandler<{
+export function authenticated(): MiddlewareHandler<{
   Variables: {
     subject: User;
     session: Session;
   };
 }> {
   return async (c, next) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
+    const headers = new Headers(c.req.raw.headers);
+    const base64Metadata = headers.get('x-metadata');
+    if (!base64Metadata) {
+      throw new HTTPException(400, {
+        message: 'Missing metadata header',
+        cause: {
+          code: 'api/invalid-metadata',
+          detail: 'Metadata header is required for this request',
+        },
+      });
+    }
+    const metadata = JSON.parse(
+      Buffer.from(base64Metadata, 'base64').toString(),
+    );
+    headers.set('authorization', metadata.authToken);
+    const session = await auth.api.getSession({ headers });
     if (!session) {
       throw new HTTPException(401, {
         message: 'Authentication required',

@@ -19,6 +19,19 @@
         "cwd": "{projectRoot}"
       }
     },
+    "deploy": {
+      "command": "prisma db push",
+      "options": {
+        "cwd": "{projectRoot}"
+      }
+    },
+    "reset": {
+      "dependsOn": ["migrate", "deploy"],
+      "command": "prisma db reset --force",
+      "options": {
+        "cwd": "{projectRoot}"
+      }
+    },
     "migrate": {
       "dependsOn": ["generate-types"],
       "command": "prisma migrate dev",
