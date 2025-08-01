@@ -34,14 +34,14 @@ export type UpdateInvoiceStatus = {
   userId: string;
   status: 'DRAFT' | 'SENT' | 'PAID';
   clientId: string;
+  invoiceNumber: string;
   dateFrom: string;
   dateTo: string;
   sentAt: string;
   paidAt: string;
   paidAmount: string;
   pdfUrl: string;
+  notes: string;
 };
 
 export type UpdateInvoiceStatus400 = any | models.ValidationError;
-
-export type UpdateInvoiceStatus404 = { error: 'Invoice not found' };

@@ -35,14 +35,14 @@ export type GetInvoice = {
   userId: string;
   status: 'DRAFT' | 'SENT' | 'PAID';
   clientId: string;
+  invoiceNumber: string;
   dateFrom: string;
   dateTo: string;
   sentAt: string;
   paidAt: string;
   paidAmount: string;
   pdfUrl: string;
+  notes: string;
 };
 
 export type GetInvoice400 = models.ValidationError;
-
-export type GetInvoice404 = { error: 'Invoice not found' };

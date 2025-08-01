@@ -30,6 +30,4 @@ export type CreateTimeEntry201 = {
   projectId: string;
 };
 
-export type CreateTimeEntry400 = any | models.ValidationError;
-
-export type CreateTimeEntry404 = { error: 'Project not found' };
+export type CreateTimeEntry400 = models.ValidationError;

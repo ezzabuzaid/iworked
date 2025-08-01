@@ -1,7 +1,7 @@
 import type * as models from '../index.ts';
 
-export type GetClient = {
-  projects: {
+export type AddInvoiceLine201 = {
+  project: {
     id: string;
     name: string;
     createdAt: string;
@@ -10,14 +10,14 @@ export type GetClient = {
     description: string;
     hourlyRate: string;
     clientId: string;
-  }[];
-  _count: { invoices: number };
+  };
   id: string;
-  name: string;
-  email: string;
-  createdAt: string;
-  updatedAt: string;
-  userId: string;
+  description: string;
+  projectId: string;
+  hours: string;
+  rate: string;
+  amount: string;
+  invoiceId: string;
 };
 
-export type GetClient400 = models.ValidationError;
+export type AddInvoiceLine400 = models.ValidationError;

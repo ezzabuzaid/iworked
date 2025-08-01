@@ -20,5 +20,3 @@ export type CreateProject201 = {
 };
 
 export type CreateProject400 = models.ValidationError;
-
-export type CreateProject404 = { error: 'Client not found' };

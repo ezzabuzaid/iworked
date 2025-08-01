@@ -22,3 +22,24 @@ export const updateTimeEntrySchema = z.object({
   id: z.string().uuid(),
 });
 export const deleteTimeEntrySchema = z.object({ id: z.string().uuid() });
+export const bulkCreateTimeEntriesSchema = z.object({
+  entries: z
+    .array(
+      z.object({
+        startedAt: z.string().datetime(),
+        endedAt: z.string().datetime(),
+        note: z.string(),
+        projectId: z.string().uuid(),
+      }),
+    )
+    .optional(),
+});
+export const bulkDeleteTimeEntriesSchema = z.object({
+  ids: z.array(z.string().uuid()),
+});
+export const bulkUpdateTimeEntriesSchema = z.object({
+  ids: z.array(z.string().uuid()),
+  updates: z
+    .object({ note: z.string(), projectId: z.string().uuid().optional() })
+    .optional(),
+});

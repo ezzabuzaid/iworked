@@ -31,5 +31,3 @@ export type GetTimeEntry = {
 };
 
 export type GetTimeEntry400 = models.ValidationError;
-
-export type GetTimeEntry404 = { error: 'Time entry not found' };

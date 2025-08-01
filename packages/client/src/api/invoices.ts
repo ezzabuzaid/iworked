@@ -36,7 +36,6 @@ export default {
       http.Created<outputs.CreateInvoice201>,
       http.BadRequest<outputs.CreateInvoice400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.CreateInvoice404>,
     ],
     toRequest(input: z.infer<typeof invoices.createInvoiceSchema>) {
       return toRequest(
@@ -99,7 +98,6 @@ export default {
       http.Ok<outputs.GetInvoice>,
       http.BadRequest<outputs.GetInvoice400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.GetInvoice404>,
     ],
     toRequest(input: z.infer<typeof invoices.getInvoiceSchema>) {
       return toRequest(
@@ -131,7 +129,6 @@ export default {
       http.Ok<outputs.DeleteInvoice>,
       http.BadRequest<outputs.DeleteInvoice400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.DeleteInvoice404>,
     ],
     toRequest(input: z.infer<typeof invoices.deleteInvoiceSchema>) {
       return toRequest(
@@ -157,13 +154,43 @@ export default {
       return result.data;
     },
   },
+  'PATCH /api/invoices/{id}': {
+    schema: invoices.updateInvoiceSchema,
+    output: [
+      http.Ok<outputs.UpdateInvoice>,
+      http.BadRequest<outputs.UpdateInvoice400>,
+      http.Unauthorized<outputs.UnauthorizedErr>,
+    ],
+    toRequest(input: z.infer<typeof invoices.updateInvoiceSchema>) {
+      return toRequest(
+        'PATCH /api/invoices/{id}',
+        json(input, {
+          inputHeaders: [],
+          inputQuery: [],
+          inputBody: ['dateFrom', 'dateTo'],
+          inputParams: ['id'],
+        }),
+      );
+    },
+    async dispatch(
+      input: z.infer<typeof invoices.updateInvoiceSchema>,
+      options: {
+        signal?: AbortSignal;
+        interceptors: Interceptor[];
+        fetch: z.infer<typeof fetchType>;
+      },
+    ) {
+      const dispatcher = new Dispatcher(options.interceptors, options.fetch);
+      const result = await dispatcher.send(this.toRequest(input), this.output);
+      return result.data;
+    },
+  },
   'PATCH /api/invoices/{id}/status': {
     schema: invoices.updateInvoiceStatusSchema,
     output: [
       http.Ok<outputs.UpdateInvoiceStatus>,
       http.BadRequest<outputs.UpdateInvoiceStatus400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.UpdateInvoiceStatus404>,
     ],
     toRequest(input: z.infer<typeof invoices.updateInvoiceStatusSchema>) {
       return toRequest(
@@ -195,7 +222,6 @@ export default {
       http.Ok<outputs.GenerateInvoicePdf>,
       http.BadRequest<outputs.GenerateInvoicePdf400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.GenerateInvoicePdf404>,
     ],
     toRequest(input: z.infer<typeof invoices.generateInvoicePdfSchema>) {
       return toRequest(
@@ -210,6 +236,99 @@ export default {
     },
     async dispatch(
       input: z.infer<typeof invoices.generateInvoicePdfSchema>,
+      options: {
+        signal?: AbortSignal;
+        interceptors: Interceptor[];
+        fetch: z.infer<typeof fetchType>;
+      },
+    ) {
+      const dispatcher = new Dispatcher(options.interceptors, options.fetch);
+      const result = await dispatcher.send(this.toRequest(input), this.output);
+      return result.data;
+    },
+  },
+  'PATCH /api/invoices/{id}/lines/{lineId}': {
+    schema: invoices.updateInvoiceLineSchema,
+    output: [
+      http.Ok<outputs.UpdateInvoiceLine>,
+      http.BadRequest<outputs.UpdateInvoiceLine400>,
+      http.Unauthorized<outputs.UnauthorizedErr>,
+    ],
+    toRequest(input: z.infer<typeof invoices.updateInvoiceLineSchema>) {
+      return toRequest(
+        'PATCH /api/invoices/{id}/lines/{lineId}',
+        json(input, {
+          inputHeaders: [],
+          inputQuery: [],
+          inputBody: ['description', 'hours', 'rate'],
+          inputParams: ['id', 'lineId'],
+        }),
+      );
+    },
+    async dispatch(
+      input: z.infer<typeof invoices.updateInvoiceLineSchema>,
+      options: {
+        signal?: AbortSignal;
+        interceptors: Interceptor[];
+        fetch: z.infer<typeof fetchType>;
+      },
+    ) {
+      const dispatcher = new Dispatcher(options.interceptors, options.fetch);
+      const result = await dispatcher.send(this.toRequest(input), this.output);
+      return result.data;
+    },
+  },
+  'DELETE /api/invoices/{id}/lines/{lineId}': {
+    schema: invoices.deleteInvoiceLineSchema,
+    output: [
+      http.Ok<outputs.DeleteInvoiceLine>,
+      http.BadRequest<outputs.DeleteInvoiceLine400>,
+      http.Unauthorized<outputs.UnauthorizedErr>,
+    ],
+    toRequest(input: z.infer<typeof invoices.deleteInvoiceLineSchema>) {
+      return toRequest(
+        'DELETE /api/invoices/{id}/lines/{lineId}',
+        empty(input, {
+          inputHeaders: [],
+          inputQuery: [],
+          inputBody: [],
+          inputParams: ['id', 'lineId'],
+        }),
+      );
+    },
+    async dispatch(
+      input: z.infer<typeof invoices.deleteInvoiceLineSchema>,
+      options: {
+        signal?: AbortSignal;
+        interceptors: Interceptor[];
+        fetch: z.infer<typeof fetchType>;
+      },
+    ) {
+      const dispatcher = new Dispatcher(options.interceptors, options.fetch);
+      const result = await dispatcher.send(this.toRequest(input), this.output);
+      return result.data;
+    },
+  },
+  'POST /api/invoices/{id}/lines': {
+    schema: invoices.addInvoiceLineSchema,
+    output: [
+      http.Created<outputs.AddInvoiceLine201>,
+      http.BadRequest<outputs.AddInvoiceLine400>,
+      http.Unauthorized<outputs.UnauthorizedErr>,
+    ],
+    toRequest(input: z.infer<typeof invoices.addInvoiceLineSchema>) {
+      return toRequest(
+        'POST /api/invoices/{id}/lines',
+        json(input, {
+          inputHeaders: [],
+          inputQuery: [],
+          inputBody: ['description', 'hours', 'rate', 'projectId'],
+          inputParams: ['id'],
+        }),
+      );
+    },
+    async dispatch(
+      input: z.infer<typeof invoices.addInvoiceLineSchema>,
       options: {
         signal?: AbortSignal;
         interceptors: Interceptor[];

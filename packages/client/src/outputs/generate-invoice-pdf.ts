@@ -6,5 +6,3 @@ export type GenerateInvoicePdf = {
 };
 
 export type GenerateInvoicePdf400 = models.ValidationError;
-
-export type GenerateInvoicePdf404 = { error: 'Invoice not found' };

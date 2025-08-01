@@ -465,24 +465,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Client not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
-                }
-              }
-            }
           }
         }
       },
@@ -589,24 +571,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UnauthorizedErr"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Client not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
                 }
               }
             }
@@ -788,24 +752,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UnauthorizedErr"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Client not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
                 }
               }
             }
@@ -1260,24 +1206,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Project not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
-                }
-              }
-            }
           }
         }
       },
@@ -1520,24 +1448,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Project not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
-                }
-              }
-            }
           }
         }
       }
@@ -1764,36 +1674,6 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "schema": {
-                        "type": "object",
-                        "properties": {
-                          "message": {
-                            "enum": ["End time must be after start time"],
-                            "type": "string"
-                          },
-                          "cause": {
-                            "type": "object",
-                            "properties": {
-                              "code": {
-                                "enum": ["api/invalid-time-range"],
-                                "type": "string"
-                              },
-                              "detail": {
-                                "enum": [
-                                  "endedAt must be greater than startedAt"
-                                ],
-                                "type": "string"
-                              }
-                            },
-                            "required": ["code", "detail"],
-                            "additionalProperties": false
-                          }
-                        },
-                        "required": ["message", "cause"],
-                        "additionalProperties": false
-                      }
-                    },
-                    {
                       "$ref": "#/components/schemas/ValidationError"
                     }
                   ]
@@ -1807,24 +1687,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UnauthorizedErr"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Project not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
                 }
               }
             }
@@ -2356,24 +2218,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Time entry not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
-                }
-              }
-            }
           }
         }
       },
@@ -2659,66 +2503,34 @@
                   "oneOf": [
                     {
                       "schema": {
-                        "oneOf": [
-                          {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "enum": [
+                              "Time entry is locked and cannot be modified"
+                            ],
+                            "type": "string"
+                          },
+                          "cause": {
                             "type": "object",
                             "properties": {
-                              "message": {
+                              "code": {
+                                "enum": ["api/time-entry-locked"],
+                                "type": "string"
+                              },
+                              "detail": {
                                 "enum": [
-                                  "Time entry is locked and cannot be modified"
+                                  "This time entry is part of a non-draft invoice and cannot be modified"
                                 ],
                                 "type": "string"
-                              },
-                              "cause": {
-                                "type": "object",
-                                "properties": {
-                                  "code": {
-                                    "enum": ["api/time-entry-locked"],
-                                    "type": "string"
-                                  },
-                                  "detail": {
-                                    "enum": [
-                                      "This time entry is part of a non-draft invoice and cannot be modified"
-                                    ],
-                                    "type": "string"
-                                  }
-                                },
-                                "required": ["code", "detail"],
-                                "additionalProperties": false
                               }
                             },
-                            "required": ["message", "cause"],
-                            "additionalProperties": false
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "message": {
-                                "enum": ["End time must be after start time"],
-                                "type": "string"
-                              },
-                              "cause": {
-                                "type": "object",
-                                "properties": {
-                                  "code": {
-                                    "enum": ["api/invalid-time-range"],
-                                    "type": "string"
-                                  },
-                                  "detail": {
-                                    "enum": [
-                                      "endedAt must be greater than startedAt"
-                                    ],
-                                    "type": "string"
-                                  }
-                                },
-                                "required": ["code", "detail"],
-                                "additionalProperties": false
-                              }
-                            },
-                            "required": ["message", "cause"],
+                            "required": ["code", "detail"],
                             "additionalProperties": false
                           }
-                        ]
+                        },
+                        "required": ["message", "cause"],
+                        "additionalProperties": false
                       }
                     },
                     {
@@ -2735,24 +2547,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UnauthorizedErr"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Time entry not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
                 }
               }
             }
@@ -2848,6 +2642,376 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/time-entries/bulk": {
+      "post": {
+        "operationId": "bulkCreateTimeEntries",
+        "parameters": [],
+        "tags": ["timeEntries"],
+        "description": "Create multiple time entries in a single transaction.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "entries": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "startedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "endedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "note": {
+                          "type": "string"
+                        },
+                        "projectId": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      },
+                      "required": ["startedAt", "endedAt", "note", "projectId"],
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "maxItems": 50
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Response for 201",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "entries": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "project": {
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "client": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "string"
+                                              },
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "email": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "null"
+                                                  },
+                                                  {
+                                                    "type": "string"
+                                                  }
+                                                ]
+                                              },
+                                              "createdAt": {
+                                                "type": "string"
+                                              },
+                                              "updatedAt": {
+                                                "type": "string"
+                                              },
+                                              "userId": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "name",
+                                              "email",
+                                              "createdAt",
+                                              "updatedAt",
+                                              "userId"
+                                            ],
+                                            "additionalProperties": false
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "required": ["client"],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      },
+                                      "userId": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "hourlyRate": {
+                                        "anyOf": [
+                                          {
+                                            "type": "null"
+                                          },
+                                          {
+                                            "type": "string"
+                                          }
+                                        ]
+                                      },
+                                      "clientId": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "userId",
+                                      "description",
+                                      "hourlyRate",
+                                      "clientId"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              }
+                            },
+                            "required": ["project"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "userId": {
+                                "type": "string"
+                              },
+                              "startedAt": {
+                                "type": "string"
+                              },
+                              "endedAt": {
+                                "type": "string"
+                              },
+                              "note": {
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              "isLocked": {
+                                "type": "boolean"
+                              },
+                              "projectId": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "createdAt",
+                              "updatedAt",
+                              "userId",
+                              "startedAt",
+                              "endedAt",
+                              "note",
+                              "isLocked",
+                              "projectId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": ["message", "entries"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "bulkDeleteTimeEntries",
+        "parameters": [],
+        "tags": ["timeEntries"],
+        "description": "Delete multiple time entries by IDs.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["ids"],
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 100
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "deletedIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": ["message", "deletedIds"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "enum": ["Cannot delete locked time entries"],
+                            "type": "string"
+                          },
+                          "cause": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "enum": ["api/entries-locked"],
+                                "type": "string"
+                              },
+                              "detail": {
+                                "type": "string"
+                              }
+                            },
+                            "required": ["code", "detail"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["message", "cause"],
+                        "additionalProperties": false
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
           },
           "404": {
             "description": "Response for 404",
@@ -2856,12 +3020,192 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
-                      "enum": ["Time entry not found"],
+                    "message": {
+                      "enum": ["Some time entries were not found"],
                       "type": "string"
+                    },
+                    "cause": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "enum": ["api/entries-not-found"],
+                          "type": "string"
+                        },
+                        "detail": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["code", "detail"],
+                      "additionalProperties": false
                     }
                   },
-                  "required": ["error"],
+                  "required": ["message", "cause"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "bulkUpdateTimeEntries",
+        "parameters": [],
+        "tags": ["timeEntries"],
+        "description": "Update multiple time entries with the same data.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["ids"],
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 100
+                  },
+                  "updates": {
+                    "type": "object",
+                    "properties": {
+                      "note": {
+                        "type": "string"
+                      },
+                      "projectId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    },
+                    "required": ["note"],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "enum": ["No updates provided"],
+                          "type": "string"
+                        },
+                        "updatedCount": {
+                          "enum": [0],
+                          "type": "number"
+                        }
+                      },
+                      "required": ["message", "updatedCount"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "updatedCount": {
+                          "type": "number"
+                        }
+                      },
+                      "required": ["message", "updatedCount"],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "enum": ["Cannot update locked time entries"],
+                            "type": "string"
+                          },
+                          "cause": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "enum": ["api/entries-locked"],
+                                "type": "string"
+                              },
+                              "detail": {
+                                "type": "string"
+                              }
+                            },
+                            "required": ["code", "detail"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["message", "cause"],
+                        "additionalProperties": false
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "enum": ["Some time entries were not found"],
+                      "type": "string"
+                    },
+                    "cause": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "enum": ["api/entries-not-found"],
+                          "type": "string"
+                        },
+                        "detail": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["code", "detail"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["message", "cause"],
                   "additionalProperties": false
                 }
               }
@@ -3360,6 +3704,908 @@
         }
       }
     },
+    "/api/reports/dashboard": {
+      "get": {
+        "operationId": "getDashboard",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "period",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["week", "month", "quarter", "year"],
+              "default": "month"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Get dashboard metrics and key performance indicators.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "period": {
+                      "anyOf": [
+                        {
+                          "enum": ["week"],
+                          "type": "string"
+                        },
+                        {
+                          "enum": ["month"],
+                          "type": "string"
+                        },
+                        {
+                          "enum": ["quarter"],
+                          "type": "string"
+                        },
+                        {
+                          "enum": ["year"],
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "dateRange": {
+                      "type": "object",
+                      "properties": {
+                        "startDate": {
+                          "type": "string"
+                        },
+                        "endDate": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["startDate", "endDate"],
+                      "additionalProperties": false
+                    },
+                    "metrics": {
+                      "type": "object",
+                      "properties": {
+                        "totalHours": {
+                          "type": "number"
+                        },
+                        "totalAmount": {
+                          "type": "number"
+                        },
+                        "totalInvoiced": {
+                          "type": "number"
+                        },
+                        "totalPaid": {
+                          "type": "number"
+                        },
+                        "pendingAmount": {
+                          "type": "number"
+                        },
+                        "activeProjects": {
+                          "type": "number"
+                        },
+                        "activeClients": {
+                          "type": "number"
+                        },
+                        "timeEntriesCount": {
+                          "type": "number"
+                        },
+                        "invoicesCount": {
+                          "type": "number"
+                        },
+                        "invoicesByStatus": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "required": [
+                        "totalHours",
+                        "totalAmount",
+                        "totalInvoiced",
+                        "totalPaid",
+                        "pendingAmount",
+                        "activeProjects",
+                        "activeClients",
+                        "timeEntriesCount",
+                        "invoicesCount",
+                        "invoicesByStatus"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["period", "dateRange", "metrics"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/time-analytics": {
+      "get": {
+        "operationId": "getTimeAnalytics",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "groupBy",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["day", "week", "month"],
+              "default": "day"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Get time tracking analytics and patterns.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "groupBy": {
+                      "anyOf": [
+                        {
+                          "enum": ["week"],
+                          "type": "string"
+                        },
+                        {
+                          "enum": ["month"],
+                          "type": "string"
+                        },
+                        {
+                          "enum": ["day"],
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "dateRange": {
+                      "type": "object",
+                      "properties": {
+                        "startDate": {
+                          "type": "string"
+                        },
+                        "endDate": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["startDate", "endDate"],
+                      "additionalProperties": false
+                    },
+                    "analytics": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "period": {},
+                          "totalHours": {
+                            "type": "number"
+                          },
+                          "totalAmount": {
+                            "type": "number"
+                          },
+                          "entriesCount": {},
+                          "projectsCount": {},
+                          "clientsCount": {},
+                          "averageHoursPerEntry": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "period",
+                          "totalHours",
+                          "totalAmount",
+                          "entriesCount",
+                          "projectsCount",
+                          "clientsCount",
+                          "averageHoursPerEntry"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "statistics": {
+                      "type": "object",
+                      "properties": {
+                        "totalPeriods": {
+                          "type": "number"
+                        },
+                        "averageHoursPerPeriod": {
+                          "type": "number"
+                        },
+                        "averageAmountPerPeriod": {
+                          "type": "number"
+                        },
+                        "mostProductivePeriod": {}
+                      },
+                      "required": [
+                        "totalPeriods",
+                        "averageHoursPerPeriod",
+                        "averageAmountPerPeriod",
+                        "mostProductivePeriod"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "groupBy",
+                    "dateRange",
+                    "analytics",
+                    "statistics"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/productivity": {
+      "get": {
+        "operationId": "getProductivityMetrics",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Get productivity metrics and insights.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "dateRange": {
+                      "type": "object",
+                      "properties": {
+                        "startDate": {
+                          "type": "string"
+                        },
+                        "endDate": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["startDate", "endDate"],
+                      "additionalProperties": false
+                    },
+                    "totalDays": {
+                      "type": "number"
+                    },
+                    "productivity": {
+                      "type": "object",
+                      "properties": {
+                        "totalHours": {
+                          "type": "number"
+                        },
+                        "totalAmount": {
+                          "type": "number"
+                        },
+                        "averageHoursPerDay": {
+                          "type": "number"
+                        },
+                        "averageSessionDuration": {
+                          "type": "number"
+                        },
+                        "totalSessions": {
+                          "type": "number"
+                        },
+                        "uniqueProjects": {
+                          "type": "number"
+                        },
+                        "uniqueClients": {
+                          "type": "number"
+                        },
+                        "dailyDistribution": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "day": {
+                                "type": "string"
+                              },
+                              "hours": {
+                                "type": "number"
+                              },
+                              "percentage": {
+                                "type": "number"
+                              }
+                            },
+                            "required": ["day", "hours", "percentage"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "topProjects": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {},
+                              "client": {},
+                              "hours": {
+                                "type": "number"
+                              },
+                              "amount": {
+                                "type": "number"
+                              },
+                              "percentage": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "client",
+                              "hours",
+                              "amount",
+                              "percentage"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "topClients": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {},
+                              "hours": {
+                                "type": "number"
+                              },
+                              "amount": {
+                                "type": "number"
+                              },
+                              "projectsCount": {
+                                "type": "number"
+                              },
+                              "percentage": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "hours",
+                              "amount",
+                              "projectsCount",
+                              "percentage"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "peakHours": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "hour": {
+                                "type": "number"
+                              },
+                              "hours": {
+                                "type": "number"
+                              }
+                            },
+                            "required": ["hour", "hours"],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "totalHours",
+                        "totalAmount",
+                        "averageHoursPerDay",
+                        "averageSessionDuration",
+                        "totalSessions",
+                        "uniqueProjects",
+                        "uniqueClients",
+                        "dailyDistribution",
+                        "topProjects",
+                        "topClients",
+                        "peakHours"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["dateRange", "totalDays", "productivity"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/export/time-entries": {
+      "get": {
+        "operationId": "exportTimeEntries",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "clientId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Export time entries as CSV.",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/export/invoices": {
+      "get": {
+        "operationId": "exportInvoices",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["DRAFT", "SENT", "PAID"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "clientId",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Export invoices as CSV.",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/export/clients/{clientId}/time-entries": {
+      "get": {
+        "operationId": "exportClientTimeEntries",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "clientId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Export all time entries for a specific client as CSV.",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/export/projects/{projectId}/time-entries": {
+      "get": {
+        "operationId": "exportProjectTimeEntries",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "projectId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Export all time entries for a specific project as CSV.",
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "enum": ["Project not found"],
+                      "type": "string"
+                    }
+                  },
+                  "required": ["error"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/export/clients/{clientId}/projects/time-entries": {
+      "post": {
+        "operationId": "exportClientProjectsTimeEntries",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "clientId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["reports"],
+        "description": "Export time entries for multiple projects of a specific client as CSV.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["projectIds"],
+                "type": "object",
+                "properties": {
+                  "projectIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1,
+                    "maxItems": 50
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Response for 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "error": {
+                          "enum": ["Client not found"],
+                          "type": "string"
+                        }
+                      },
+                      "required": ["error"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "Some projects not found or do not belong to this client"
+                          ],
+                          "type": "string"
+                        },
+                        "missingProjectIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": ["error", "missingProjectIds"],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/invoices": {
       "post": {
         "operationId": "createInvoice",
@@ -3587,6 +4833,16 @@
                             "clientId": {
                               "type": "string"
                             },
+                            "invoiceNumber": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
                             "dateFrom": {
                               "type": "string"
                             },
@@ -3632,6 +4888,16 @@
                                   "type": "string"
                                 }
                               ]
+                            },
+                            "notes": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
                             }
                           },
                           "required": [
@@ -3641,12 +4907,14 @@
                             "userId",
                             "status",
                             "clientId",
+                            "invoiceNumber",
                             "dateFrom",
                             "dateTo",
                             "sentAt",
                             "paidAt",
                             "paidAmount",
-                            "pdfUrl"
+                            "pdfUrl",
+                            "notes"
                           ],
                           "additionalProperties": false
                         }
@@ -3741,24 +5009,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UnauthorizedErr"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Client not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
                 }
               }
             }
@@ -3935,6 +5185,16 @@
                           "clientId": {
                             "type": "string"
                           },
+                          "invoiceNumber": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
                           "dateFrom": {
                             "type": "string"
                           },
@@ -3980,6 +5240,16 @@
                                 "type": "string"
                               }
                             ]
+                          },
+                          "notes": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
                           }
                         },
                         "required": [
@@ -3992,12 +5262,14 @@
                           "userId",
                           "status",
                           "clientId",
+                          "invoiceNumber",
                           "dateFrom",
                           "dateTo",
                           "sentAt",
                           "paidAt",
                           "paidAmount",
-                          "pdfUrl"
+                          "pdfUrl",
+                          "notes"
                         ],
                         "additionalProperties": false
                       }
@@ -4261,6 +5533,16 @@
                     "clientId": {
                       "type": "string"
                     },
+                    "invoiceNumber": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
                     "dateFrom": {
                       "type": "string"
                     },
@@ -4306,6 +5588,16 @@
                           "type": "string"
                         }
                       ]
+                    },
+                    "notes": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
                     }
                   },
                   "required": [
@@ -4318,12 +5610,14 @@
                     "userId",
                     "status",
                     "clientId",
+                    "invoiceNumber",
                     "dateFrom",
                     "dateTo",
                     "sentAt",
                     "paidAt",
                     "paidAmount",
-                    "pdfUrl"
+                    "pdfUrl",
+                    "notes"
                   ],
                   "additionalProperties": false
                 }
@@ -4350,24 +5644,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UnauthorizedErr"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Invoice not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
                 }
               }
             }
@@ -4461,21 +5737,580 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Response for 404",
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateInvoice",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Update invoice details (DRAFT status only).",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dateFrom": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "dateTo": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for 200",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Invoice not found"],
-                      "type": "string"
+                  "oneOf": [
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "invoiceLines": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "projectId": {
+                                    "type": "string"
+                                  },
+                                  "hours": {
+                                    "type": "string"
+                                  },
+                                  "rate": {
+                                    "type": "string"
+                                  },
+                                  "amount": {
+                                    "type": "string"
+                                  },
+                                  "invoiceId": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "description",
+                                  "projectId",
+                                  "hours",
+                                  "rate",
+                                  "amount",
+                                  "invoiceId"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": ["invoiceLines"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "anyOf": [
+                                {
+                                  "enum": ["DRAFT"],
+                                  "type": "string"
+                                },
+                                {
+                                  "enum": ["SENT"],
+                                  "type": "string"
+                                },
+                                {
+                                  "enum": ["PAID"],
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "clientId": {
+                              "type": "string"
+                            },
+                            "invoiceNumber": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "dateFrom": {
+                              "type": "string"
+                            },
+                            "dateTo": {
+                              "type": "string"
+                            },
+                            "sentAt": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "paidAt": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "paidAmount": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "pdfUrl": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "notes": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "createdAt",
+                            "updatedAt",
+                            "userId",
+                            "status",
+                            "clientId",
+                            "invoiceNumber",
+                            "dateFrom",
+                            "dateTo",
+                            "sentAt",
+                            "paidAt",
+                            "paidAmount",
+                            "pdfUrl",
+                            "notes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "client": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "email": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                },
+                                "userId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "email",
+                                "createdAt",
+                                "updatedAt",
+                                "userId"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "invoiceLines": {
+                              "type": "array",
+                              "items": {
+                                "allOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "project": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "createdAt": {
+                                            "type": "string"
+                                          },
+                                          "updatedAt": {
+                                            "type": "string"
+                                          },
+                                          "userId": {
+                                            "type": "string"
+                                          },
+                                          "description": {
+                                            "anyOf": [
+                                              {
+                                                "type": "null"
+                                              },
+                                              {
+                                                "type": "string"
+                                              }
+                                            ]
+                                          },
+                                          "hourlyRate": {
+                                            "anyOf": [
+                                              {
+                                                "type": "null"
+                                              },
+                                              {
+                                                "type": "string"
+                                              }
+                                            ]
+                                          },
+                                          "clientId": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "createdAt",
+                                          "updatedAt",
+                                          "userId",
+                                          "description",
+                                          "hourlyRate",
+                                          "clientId"
+                                        ],
+                                        "additionalProperties": false
+                                      }
+                                    },
+                                    "required": ["project"],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "projectId": {
+                                        "type": "string"
+                                      },
+                                      "hours": {
+                                        "type": "string"
+                                      },
+                                      "rate": {
+                                        "type": "string"
+                                      },
+                                      "amount": {
+                                        "type": "string"
+                                      },
+                                      "invoiceId": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "description",
+                                      "projectId",
+                                      "hours",
+                                      "rate",
+                                      "amount",
+                                      "invoiceId"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "required": ["client", "invoiceLines"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "anyOf": [
+                                {
+                                  "enum": ["DRAFT"],
+                                  "type": "string"
+                                },
+                                {
+                                  "enum": ["SENT"],
+                                  "type": "string"
+                                },
+                                {
+                                  "enum": ["PAID"],
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "clientId": {
+                              "type": "string"
+                            },
+                            "invoiceNumber": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "dateFrom": {
+                              "type": "string"
+                            },
+                            "dateTo": {
+                              "type": "string"
+                            },
+                            "sentAt": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "paidAt": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "paidAmount": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "pdfUrl": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "notes": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "createdAt",
+                            "updatedAt",
+                            "userId",
+                            "status",
+                            "clientId",
+                            "invoiceNumber",
+                            "dateFrom",
+                            "dateTo",
+                            "sentAt",
+                            "paidAt",
+                            "paidAmount",
+                            "pdfUrl",
+                            "notes"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
                     }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "schema": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "message": {
+                                "enum": ["Only draft invoices can be edited"],
+                                "type": "string"
+                              },
+                              "cause": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "enum": ["api/invoice-not-editable"],
+                                    "type": "string"
+                                  },
+                                  "detail": {
+                                    "enum": [
+                                      "Invoice must be in DRAFT status to be edited"
+                                    ],
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["code", "detail"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["message", "cause"],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "message": {
+                                "enum": ["End date must be after start date"],
+                                "type": "string"
+                              },
+                              "cause": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "enum": ["api/invalid-date-range"],
+                                    "type": "string"
+                                  },
+                                  "detail": {
+                                    "enum": [
+                                      "dateTo must be greater than dateFrom"
+                                    ],
+                                    "type": "string"
+                                  }
+                                },
+                                "required": ["code", "detail"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": ["message", "cause"],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
                 }
               }
             }
@@ -4711,6 +6546,16 @@
                         "clientId": {
                           "type": "string"
                         },
+                        "invoiceNumber": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
+                        },
                         "dateFrom": {
                           "type": "string"
                         },
@@ -4756,6 +6601,16 @@
                               "type": "string"
                             }
                           ]
+                        },
+                        "notes": {
+                          "anyOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "string"
+                            }
+                          ]
                         }
                       },
                       "required": [
@@ -4765,12 +6620,14 @@
                         "userId",
                         "status",
                         "clientId",
+                        "invoiceNumber",
                         "dateFrom",
                         "dateTo",
                         "sentAt",
                         "paidAt",
                         "paidAmount",
-                        "pdfUrl"
+                        "pdfUrl",
+                        "notes"
                       ],
                       "additionalProperties": false
                     }
@@ -4828,24 +6685,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UnauthorizedErr"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Response for 404",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "enum": ["Invoice not found"],
-                      "type": "string"
-                    }
-                  },
-                  "required": ["error"],
-                  "additionalProperties": false
                 }
               }
             }
@@ -4914,21 +6753,480 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/invoices/{id}/lines/{lineId}": {
+      "patch": {
+        "operationId": "updateInvoiceLine",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           },
-          "404": {
-            "description": "Response for 404",
+          {
+            "in": "path",
+            "name": "lineId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Update an invoice line (DRAFT invoice only).",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "hours": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "rate": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response for 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "projectId": {
+                          "type": "string"
+                        },
+                        "hours": {
+                          "type": "string"
+                        },
+                        "rate": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "string"
+                        },
+                        "invoiceId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "description",
+                        "projectId",
+                        "hours",
+                        "rate",
+                        "amount",
+                        "invoiceId"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "project": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                },
+                                "userId": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "hourlyRate": {
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
+                                },
+                                "clientId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "createdAt",
+                                "updatedAt",
+                                "userId",
+                                "description",
+                                "hourlyRate",
+                                "clientId"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": ["project"],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "projectId": {
+                              "type": "string"
+                            },
+                            "hours": {
+                              "type": "string"
+                            },
+                            "rate": {
+                              "type": "string"
+                            },
+                            "amount": {
+                              "type": "string"
+                            },
+                            "invoiceId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "description",
+                            "projectId",
+                            "hours",
+                            "rate",
+                            "amount",
+                            "invoiceId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteInvoiceLine",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "lineId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Remove a line from a draft invoice.",
+        "responses": {
+          "200": {
+            "description": "Response for 200",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
-                      "enum": ["Invoice not found"],
+                    "message": {
+                      "enum": ["Invoice line deleted successfully"],
                       "type": "string"
                     }
                   },
-                  "required": ["error"],
+                  "required": ["message"],
                   "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/invoices/{id}/lines": {
+      "post": {
+        "operationId": "addInvoiceLine",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "tags": ["invoices"],
+        "description": "Add a new line to a draft invoice.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": ["description", "hours", "rate", "projectId"],
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "hours": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "rate": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "projectId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Response for 201",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "project": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "hourlyRate": {
+                              "anyOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "string"
+                                }
+                              ]
+                            },
+                            "clientId": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "createdAt",
+                            "updatedAt",
+                            "userId",
+                            "description",
+                            "hourlyRate",
+                            "clientId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["project"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "projectId": {
+                          "type": "string"
+                        },
+                        "hours": {
+                          "type": "string"
+                        },
+                        "rate": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "string"
+                        },
+                        "invoiceId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "description",
+                        "projectId",
+                        "hours",
+                        "rate",
+                        "amount",
+                        "invoiceId"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErr"
                 }
               }
             }

@@ -10,5 +10,3 @@ export type UpdateClient = {
 };
 
 export type UpdateClient400 = models.ValidationError;
-
-export type UpdateClient404 = { error: 'Client not found' };

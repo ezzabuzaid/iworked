@@ -26,12 +26,14 @@ export type GetInvoices = {
     userId: string;
     status: 'DRAFT' | 'SENT' | 'PAID';
     clientId: string;
+    invoiceNumber: string;
     dateFrom: string;
     dateTo: string;
     sentAt: string;
     paidAt: string;
     paidAmount: string;
     pdfUrl: string;
+    notes: string;
   }[];
   pagination: {
     page: number;

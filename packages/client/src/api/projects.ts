@@ -36,7 +36,6 @@ export default {
       http.Created<outputs.CreateProject201>,
       http.BadRequest<outputs.CreateProject400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.CreateProject404>,
     ],
     toRequest(input: z.infer<typeof projects.createProjectSchema>) {
       return toRequest(
@@ -99,7 +98,6 @@ export default {
       http.Ok<outputs.GetProject>,
       http.BadRequest<outputs.GetProject400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.GetProject404>,
     ],
     toRequest(input: z.infer<typeof projects.getProjectSchema>) {
       return toRequest(
@@ -131,7 +129,6 @@ export default {
       http.Ok<outputs.UpdateProject>,
       http.BadRequest<outputs.UpdateProject400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.UpdateProject404>,
     ],
     toRequest(input: z.infer<typeof projects.updateProjectSchema>) {
       return toRequest(

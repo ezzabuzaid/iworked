@@ -98,7 +98,6 @@ export default {
       http.Ok<outputs.GetClient>,
       http.BadRequest<outputs.GetClient400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.GetClient404>,
     ],
     toRequest(input: z.infer<typeof clients.getClientSchema>) {
       return toRequest(
@@ -130,7 +129,6 @@ export default {
       http.Ok<outputs.UpdateClient>,
       http.BadRequest<outputs.UpdateClient400>,
       http.Unauthorized<outputs.UnauthorizedErr>,
-      http.NotFound<outputs.UpdateClient404>,
     ],
     toRequest(input: z.infer<typeof clients.updateClientSchema>) {
       return toRequest(

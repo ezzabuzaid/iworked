@@ -1,17 +1,9 @@
 import type * as models from '../index.ts';
 
-export type UpdateProject =
-  | {
-      id: string;
-      name: string;
-      createdAt: string;
-      updatedAt: string;
-      userId: string;
-      description: string;
-      hourlyRate: string;
-      clientId: string;
-    }
-  | {
+export type BulkCreateTimeEntries201 = {
+  message: string;
+  entries: {
+    project: {
       client: {
         id: string;
         name: string;
@@ -29,5 +21,16 @@ export type UpdateProject =
       hourlyRate: string;
       clientId: string;
     };
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    userId: string;
+    startedAt: string;
+    endedAt: string;
+    note: string;
+    isLocked: boolean;
+    projectId: string;
+  }[];
+};
 
-export type UpdateProject400 = models.ValidationError;
+export type BulkCreateTimeEntries400 = models.ValidationError;

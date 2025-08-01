@@ -340,12 +340,6 @@ Content Type: `application/empty`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`GetClient404`](#getclient404)
-
 ### updateClient | _PATCH /api/clients/{id}_
 
 #### Example usage
@@ -359,6 +353,7 @@ const iWorked = new IWorked({
 });
 
 const result = await iWorked.request('PATCH /api/clients/{id}', {
+  name: 'example',
   email: 'user@example.com',
 });
 
@@ -391,12 +386,6 @@ Content Type: `application/json`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`UpdateClient404`](#updateclient404)
-
 ### createProject | _POST /api/projects_
 
 #### Example usage
@@ -411,7 +400,7 @@ const iWorked = new IWorked({
 
 const result = await iWorked.request('POST /api/projects', {
   name: 'example',
-  hourlyRate: 1,
+  description: 'example',
   clientId: '123e4567-e89b-12d3-a456-426614174000',
 });
 
@@ -443,12 +432,6 @@ Content Type: `application/json`
 **Content Type:** `application/json`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
-
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`CreateProject404`](#createproject404)
 
 ### getProjects | _GET /api/projects_
 
@@ -536,12 +519,6 @@ Content Type: `application/empty`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`GetProject404`](#getproject404)
-
 ### updateProject | _PATCH /api/projects/{id}_
 
 #### Example usage
@@ -555,7 +532,7 @@ const iWorked = new IWorked({
 });
 
 const result = await iWorked.request('PATCH /api/projects/{id}', {
-  name: 'example',
+  description: 'example',
   hourlyRate: 1,
 });
 
@@ -588,12 +565,6 @@ Content Type: `application/json`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`UpdateProject404`](#updateproject404)
-
 ### createTimeEntry | _POST /api/time-entries_
 
 #### Example usage
@@ -609,7 +580,6 @@ const iWorked = new IWorked({
 const result = await iWorked.request('POST /api/time-entries', {
   startedAt: '2025-07-17T09:08:00.097Z',
   endedAt: '2025-07-17T09:08:00.097Z',
-  note: 'example',
   projectId: '123e4567-e89b-12d3-a456-426614174000',
 });
 
@@ -641,12 +611,6 @@ Content Type: `application/json`
 **Content Type:** `application/json`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
-
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`CreateTimeEntry404`](#createtimeentry404)
 
 ### getTimeEntries | _GET /api/time-entries_
 
@@ -734,12 +698,6 @@ Content Type: `application/empty`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`GetTimeEntry404`](#gettimeentry404)
-
 ### updateTimeEntry | _PATCH /api/time-entries/{id}_
 
 #### Example usage
@@ -752,7 +710,10 @@ const iWorked = new IWorked({
   token: '"<token>"',
 });
 
-const result = await iWorked.request('PATCH /api/time-entries/{id}', {});
+const result = await iWorked.request('PATCH /api/time-entries/{id}', {
+  endedAt: '2025-07-17T09:08:00.097Z',
+  note: 'example',
+});
 
 console.log(result.data);
 ```
@@ -782,12 +743,6 @@ Content Type: `application/json`
 **Content Type:** `application/json`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
-
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`UpdateTimeEntry404`](#updatetimeentry404)
 
 ### deleteTimeEntry | _DELETE /api/time-entries/{id}_
 
@@ -832,11 +787,159 @@ Content Type: `application/empty`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
+### bulkCreateTimeEntries | _POST /api/time-entries/bulk_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('POST /api/time-entries/bulk', {
+  entries: [
+    {
+      startedAt: '2025-07-17T09:08:00.097Z',
+      endedAt: '2025-07-17T09:08:00.097Z',
+      note: 'example',
+      projectId: '123e4567-e89b-12d3-a456-426614174000',
+    },
+  ],
+});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/json`
+
+**Type:** [`BulkCreateTimeEntries`](#bulkcreatetimeentries)
+
+#### Output
+
+**201** - Response for 201
+
+**Content Type:** `application/json`
+
+**Type:** [`BulkCreateTimeEntries201`](#bulkcreatetimeentries201)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`BulkCreateTimeEntries400`](#bulkcreatetimeentries400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### bulkDeleteTimeEntries | _DELETE /api/time-entries/bulk_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('DELETE /api/time-entries/bulk', {
+  ids: ['123e4567-e89b-12d3-a456-426614174000'],
+});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/json`
+
+**Type:** [`BulkDeleteTimeEntriesInput`](#bulkdeletetimeentriesinput)
+
+#### Output
+
+**200** - Response for 200
+
+**Content Type:** `application/json`
+
+**Type:** [`BulkDeleteTimeEntries`](#bulkdeletetimeentries)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`BulkDeleteTimeEntries400`](#bulkdeletetimeentries400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
 **404** - Response for 404
 
 **Content Type:** `application/json`
 
-**Type:** [`DeleteTimeEntry404`](#deletetimeentry404)
+**Type:** [`BulkDeleteTimeEntries404`](#bulkdeletetimeentries404)
+
+### bulkUpdateTimeEntries | _PATCH /api/time-entries/bulk_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('PATCH /api/time-entries/bulk', {
+  ids: ['123e4567-e89b-12d3-a456-426614174000'],
+});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/json`
+
+**Type:** [`BulkUpdateTimeEntriesInput`](#bulkupdatetimeentriesinput)
+
+#### Output
+
+**200** - Response for 200
+
+**Content Type:** `application/json`
+
+**Type:** [`BulkUpdateTimeEntries`](#bulkupdatetimeentries)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`BulkUpdateTimeEntries400`](#bulkupdatetimeentries400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+**404** - Response for 404
+
+**Content Type:** `application/json`
+
+**Type:** [`BulkUpdateTimeEntries404`](#bulkupdatetimeentries404)
 
 ### getSummary | _GET /api/reports/summary_
 
@@ -924,6 +1027,378 @@ Content Type: `application/empty`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
+### getDashboard | _GET /api/reports/dashboard_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('GET /api/reports/dashboard', {});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/empty`
+
+**Type:** [`GetDashboardInput`](#getdashboardinput)
+
+#### Output
+
+**200** - Response for 200
+
+**Content Type:** `application/json`
+
+**Type:** [`GetDashboard`](#getdashboard)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`GetDashboard400`](#getdashboard400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### getTimeAnalytics | _GET /api/reports/time-analytics_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('GET /api/reports/time-analytics', {});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/empty`
+
+**Type:** [`GetTimeAnalyticsInput`](#gettimeanalyticsinput)
+
+#### Output
+
+**200** - Response for 200
+
+**Content Type:** `application/json`
+
+**Type:** [`GetTimeAnalytics`](#gettimeanalytics)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`GetTimeAnalytics400`](#gettimeanalytics400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### getProductivityMetrics | _GET /api/reports/productivity_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('GET /api/reports/productivity', {});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/empty`
+
+**Type:** [`GetProductivityMetricsInput`](#getproductivitymetricsinput)
+
+#### Output
+
+**200** - Response for 200
+
+**Content Type:** `application/json`
+
+**Type:** [`GetProductivityMetrics`](#getproductivitymetrics)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`GetProductivityMetrics400`](#getproductivitymetrics400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### exportTimeEntries | _GET /api/reports/export/time-entries_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request(
+  'GET /api/reports/export/time-entries',
+  {},
+);
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/empty`
+
+**Type:** [`ExportTimeEntriesInput`](#exporttimeentriesinput)
+
+#### Output
+
+**200** - OK
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportTimeEntries`](#exporttimeentries)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportTimeEntries400`](#exporttimeentries400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### exportInvoices | _GET /api/reports/export/invoices_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('GET /api/reports/export/invoices', {});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/empty`
+
+**Type:** [`ExportInvoicesInput`](#exportinvoicesinput)
+
+#### Output
+
+**200** - OK
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportInvoices`](#exportinvoices)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportInvoices400`](#exportinvoices400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### exportClientTimeEntries | _GET /api/reports/export/clients/{clientId}/time-entries_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request(
+  'GET /api/reports/export/clients/{clientId}/time-entries',
+  {},
+);
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/empty`
+
+**Type:** [`ExportClientTimeEntriesInput`](#exportclienttimeentriesinput)
+
+#### Output
+
+**200** - OK
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportClientTimeEntries`](#exportclienttimeentries)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportClientTimeEntries400`](#exportclienttimeentries400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### exportProjectTimeEntries | _GET /api/reports/export/projects/{projectId}/time-entries_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request(
+  'GET /api/reports/export/projects/{projectId}/time-entries',
+  {},
+);
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/empty`
+
+**Type:** [`ExportProjectTimeEntriesInput`](#exportprojecttimeentriesinput)
+
+#### Output
+
+**200** - OK
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportProjectTimeEntries`](#exportprojecttimeentries)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportProjectTimeEntries400`](#exportprojecttimeentries400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+**404** - Response for 404
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportProjectTimeEntries404`](#exportprojecttimeentries404)
+
+### exportClientProjectsTimeEntries | _POST /api/reports/export/clients/{clientId}/projects/time-entries_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request(
+  'POST /api/reports/export/clients/{clientId}/projects/time-entries',
+  {
+    projectIds: ['123e4567-e89b-12d3-a456-426614174000'],
+    startDate: '2025-07-17T09:08:00.097Z',
+    endDate: '2025-07-17T09:08:00.097Z',
+  },
+);
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/json`
+
+**Type:** [`ExportClientProjectsTimeEntriesInput`](#exportclientprojectstimeentriesinput)
+
+#### Output
+
+**200** - OK
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportClientProjectsTimeEntries`](#exportclientprojectstimeentries)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportClientProjectsTimeEntries400`](#exportclientprojectstimeentries400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+**404** - Response for 404
+
+**Content Type:** `application/json`
+
+**Type:** [`ExportClientProjectsTimeEntries404`](#exportclientprojectstimeentries404)
+
 ### createInvoice | _POST /api/invoices_
 
 #### Example usage
@@ -970,12 +1445,6 @@ Content Type: `application/json`
 **Content Type:** `application/json`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
-
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`CreateInvoice404`](#createinvoice404)
 
 ### getInvoices | _GET /api/invoices_
 
@@ -1063,12 +1532,6 @@ Content Type: `application/empty`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`GetInvoice404`](#getinvoice404)
-
 ### deleteInvoice | _DELETE /api/invoices/{id}_
 
 #### Example usage
@@ -1112,11 +1575,50 @@ Content Type: `application/empty`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
-**404** - Response for 404
+### updateInvoice | _PATCH /api/invoices/{id}_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('PATCH /api/invoices/{id}', {
+  dateTo: '2025-07-17T09:08:00.097Z',
+});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/json`
+
+**Type:** [`UpdateInvoiceInput`](#updateinvoiceinput)
+
+#### Output
+
+**200** - Response for 200
 
 **Content Type:** `application/json`
 
-**Type:** [`DeleteInvoice404`](#deleteinvoice404)
+**Type:** [`UpdateInvoice`](#updateinvoice)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`UpdateInvoice400`](#updateinvoice400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
 
 ### updateInvoiceStatus | _PATCH /api/invoices/{id}/status_
 
@@ -1132,7 +1634,6 @@ const iWorked = new IWorked({
 
 const result = await iWorked.request('PATCH /api/invoices/{id}/status', {
   status: 'SENT',
-  paidAmount: 1,
 });
 
 console.log(result.data);
@@ -1163,12 +1664,6 @@ Content Type: `application/json`
 **Content Type:** `application/json`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
-
-**404** - Response for 404
-
-**Content Type:** `application/json`
-
-**Type:** [`UpdateInvoiceStatus404`](#updateinvoicestatus404)
 
 ### generateInvoicePdf | _POST /api/invoices/{id}/pdf_
 
@@ -1213,11 +1708,149 @@ Content Type: `application/empty`
 
 **Type:** [`UnauthorizedErr`](#unauthorizederr)
 
-**404** - Response for 404
+### updateInvoiceLine | _PATCH /api/invoices/{id}/lines/{lineId}_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request(
+  'PATCH /api/invoices/{id}/lines/{lineId}',
+  {
+    description: 'example',
+    hours: 1,
+    rate: 1,
+  },
+);
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/json`
+
+**Type:** [`UpdateInvoiceLineInput`](#updateinvoicelineinput)
+
+#### Output
+
+**200** - Response for 200
 
 **Content Type:** `application/json`
 
-**Type:** [`GenerateInvoicePdf404`](#generateinvoicepdf404)
+**Type:** [`UpdateInvoiceLine`](#updateinvoiceline)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`UpdateInvoiceLine400`](#updateinvoiceline400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### deleteInvoiceLine | _DELETE /api/invoices/{id}/lines/{lineId}_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request(
+  'DELETE /api/invoices/{id}/lines/{lineId}',
+  {},
+);
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/empty`
+
+**Type:** [`DeleteInvoiceLineInput`](#deleteinvoicelineinput)
+
+#### Output
+
+**200** - Response for 200
+
+**Content Type:** `application/json`
+
+**Type:** [`DeleteInvoiceLine`](#deleteinvoiceline)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`DeleteInvoiceLine400`](#deleteinvoiceline400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
+
+### addInvoiceLine | _POST /api/invoices/{id}/lines_
+
+#### Example usage
+
+```typescript
+import { IWorked } from '@iworked/sdk';
+
+const iWorked = new IWorked({
+  baseUrl: '/',
+  token: '"<token>"',
+});
+
+const result = await iWorked.request('POST /api/invoices/{id}/lines', {
+  description: 'example',
+  hours: 1,
+  rate: 1,
+  projectId: '123e4567-e89b-12d3-a456-426614174000',
+});
+
+console.log(result.data);
+```
+
+#### Input
+
+Content Type: `application/json`
+
+**Type:** [`AddInvoiceLine`](#addinvoiceline)
+
+#### Output
+
+**201** - Response for 201
+
+**Content Type:** `application/json`
+
+**Type:** [`AddInvoiceLine201`](#addinvoiceline201)
+
+**400** - Bad Request
+
+**Content Type:** `application/json`
+
+**Type:** [`AddInvoiceLine400`](#addinvoiceline400)
+
+**401** - Unauthorized
+
+**Content Type:** `application/json`
+
+**Type:** [`UnauthorizedErr`](#unauthorizederr)
 
 ## Schemas
 
@@ -1469,18 +2102,6 @@ Content Type: `application/empty`
 
 <details>
 
-<summary><h3 id="getclient404">GetClient404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Client not found":
-
-</details>
-
-<details>
-
 <summary><h3 id="getclientinput">GetClientInput</h3></summary>
 
 **Type:** `unknown`
@@ -1514,18 +2135,6 @@ Content Type: `application/empty`
 <summary><h3 id="updateclient400">UpdateClient400</h3></summary>
 
 **Type:** [`ValidationError`](#validationerror)
-
-</details>
-
-<details>
-
-<summary><h3 id="updateclient404">UpdateClient404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Client not found":
 
 </details>
 
@@ -1594,18 +2203,6 @@ Content Type: `application/empty`
 <summary><h3 id="createproject400">CreateProject400</h3></summary>
 
 **Type:** [`ValidationError`](#validationerror)
-
-</details>
-
-<details>
-
-<summary><h3 id="createproject404">CreateProject404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Client not found":
 
 </details>
 
@@ -1801,18 +2398,6 @@ Content Type: `application/empty`
 
 <details>
 
-<summary><h3 id="getproject404">GetProject404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Project not found":
-
-</details>
-
-<details>
-
 <summary><h3 id="getprojectinput">GetProjectInput</h3></summary>
 
 **Type:** `unknown`
@@ -1892,18 +2477,6 @@ Content Type: `application/empty`
 <summary><h3 id="updateproject400">UpdateProject400</h3></summary>
 
 **Type:** [`ValidationError`](#validationerror)
-
-</details>
-
-<details>
-
-<summary><h3 id="updateproject404">UpdateProject404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Project not found":
 
 </details>
 
@@ -1997,27 +2570,7 @@ Content Type: `application/empty`
 
 <summary><h3 id="createtimeentry400">CreateTimeEntry400</h3></summary>
 
-**One of (Exclusive Union):**
-
-- **Option 1:**
-
-**Type:** `unknown`
-
-- **Option 2:**
-
 **Type:** [`ValidationError`](#validationerror)
-
-</details>
-
-<details>
-
-<summary><h3 id="createtimeentry404">CreateTimeEntry404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Project not found":
 
 </details>
 
@@ -2213,18 +2766,6 @@ Content Type: `application/empty`
 
 <details>
 
-<summary><h3 id="gettimeentry404">GetTimeEntry404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Time entry not found":
-
-</details>
-
-<details>
-
 <summary><h3 id="gettimeentryinput">GetTimeEntryInput</h3></summary>
 
 **Type:** `unknown`
@@ -2341,18 +2882,6 @@ Content Type: `application/empty`
 
 <details>
 
-<summary><h3 id="updatetimeentry404">UpdateTimeEntry404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Time entry not found":
-
-</details>
-
-<details>
-
 <summary><h3 id="updatetimeentryinput">UpdateTimeEntryInput</h3></summary>
 
 **Type:** `object`
@@ -2397,21 +2926,287 @@ Content Type: `application/empty`
 
 <details>
 
-<summary><h3 id="deletetimeentry404">DeleteTimeEntry404</h3></summary>
+<summary><h3 id="deletetimeentryinput">DeleteTimeEntryInput</h3></summary>
 
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Time entry not found":
+**Type:** `unknown`
 
 </details>
 
 <details>
 
-<summary><h3 id="deletetimeentryinput">DeleteTimeEntryInput</h3></summary>
+<summary><h3 id="bulkcreatetimeentries201">BulkCreateTimeEntries201</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `message` `string` required:
+
+- `entries` `array` required:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `project` `object`:
+
+**Properties:**
+
+- `client` `object`:
+
+**Properties:**
+
+- `id` `string` required:
+
+- `name` `string` required:
+
+- `email` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `id` `string` required:
+
+- `name` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `description` `string` required:
+
+- `hourlyRate` `string` required:
+
+- `clientId` `string` required:
+
+- `id` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `startedAt` `string` required:
+
+- `endedAt` `string` required:
+
+- `note` `string` required:
+
+- `isLocked` `boolean` required:
+
+- `projectId` `string` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkcreatetimeentries400">BulkCreateTimeEntries400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkcreatetimeentries">BulkCreateTimeEntries</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `entries` `array`:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `startedAt` `string` (format: date-time) required:
+
+- `endedAt` `string` (format: date-time) required:
+
+- `note` `string` required:
+
+- `projectId` `string` (format: uuid) required:
+
+- Minimum items: 1
+
+- Maximum items: 50
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkdeletetimeentries">BulkDeleteTimeEntries</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `message` `string` required:
+
+- `deletedIds` `array` required:
+
+**Array items:**
+
+**Type:** `string`
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkdeletetimeentries400">BulkDeleteTimeEntries400</h3></summary>
+
+**One of (Exclusive Union):**
+
+- **Option 1:**
 
 **Type:** `unknown`
+
+- **Option 2:**
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkdeletetimeentries404">BulkDeleteTimeEntries404</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `message` `string` required default: "Some time entries were not found":
+
+- `cause` `object` required:
+
+**Properties:**
+
+- `code` `string` required default: "api/entries-not-found":
+
+- `detail` `string` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkdeletetimeentriesinput">BulkDeleteTimeEntriesInput</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `ids` `array` required:
+
+**Array items:**
+
+**Type:** `string` (format: uuid)
+
+- Minimum items: 1
+
+- Maximum items: 100
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkupdatetimeentries">BulkUpdateTimeEntries</h3></summary>
+
+**One of (Exclusive Union):**
+
+- **Option 1:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `message` `string` required default: "No updates provided":
+
+- `updatedCount` `number` required default: 0:
+
+- **Option 2:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `message` `string` required:
+
+- `updatedCount` `number` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkupdatetimeentries400">BulkUpdateTimeEntries400</h3></summary>
+
+**One of (Exclusive Union):**
+
+- **Option 1:**
+
+**Type:** `unknown`
+
+- **Option 2:**
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkupdatetimeentries404">BulkUpdateTimeEntries404</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `message` `string` required default: "Some time entries were not found":
+
+- `cause` `object` required:
+
+**Properties:**
+
+- `code` `string` required default: "api/entries-not-found":
+
+- `detail` `string` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="bulkupdatetimeentriesinput">BulkUpdateTimeEntriesInput</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `ids` `array` required:
+
+**Array items:**
+
+**Type:** `string` (format: uuid)
+
+- Minimum items: 1
+
+- Maximum items: 100
+
+- `updates` `object`:
+
+**Properties:**
+
+- `note` `string` required:
+
+- `projectId` `string` (format: uuid):
 
 </details>
 
@@ -2613,6 +3408,496 @@ Content Type: `application/empty`
 
 <details>
 
+<summary><h3 id="getdashboard">GetDashboard</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `period` **Any of (Union):** required:
+
+- **Option 1:**
+
+**Type:** `string`
+
+**Default:** `"week"`
+
+- **Option 2:**
+
+**Type:** `string`
+
+**Default:** `"month"`
+
+- **Option 3:**
+
+**Type:** `string`
+
+**Default:** `"quarter"`
+
+- **Option 4:**
+
+**Type:** `string`
+
+**Default:** `"year"`
+
+- `dateRange` `object` required:
+
+**Properties:**
+
+- `startDate` `string` required:
+
+- `endDate` `string` required:
+
+- `metrics` `object` required:
+
+**Properties:**
+
+- `totalHours` `number` required:
+
+- `totalAmount` `number` required:
+
+- `totalInvoiced` `number` required:
+
+- `totalPaid` `number` required:
+
+- `pendingAmount` `number` required:
+
+- `activeProjects` `number` required:
+
+- `activeClients` `number` required:
+
+- `timeEntriesCount` `number` required:
+
+- `invoicesCount` `number` required:
+
+- `invoicesByStatus` `object` required:
+
+**Additional Properties:**
+
+**Type:** `number`
+
+</details>
+
+<details>
+
+<summary><h3 id="getdashboard400">GetDashboard400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="getdashboardinput">GetDashboardInput</h3></summary>
+
+**Type:** `unknown`
+
+</details>
+
+<details>
+
+<summary><h3 id="gettimeanalytics">GetTimeAnalytics</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `groupBy` **Any of (Union):** required:
+
+- **Option 1:**
+
+**Type:** `string`
+
+**Default:** `"week"`
+
+- **Option 2:**
+
+**Type:** `string`
+
+**Default:** `"month"`
+
+- **Option 3:**
+
+**Type:** `string`
+
+**Default:** `"day"`
+
+- `dateRange` `object` required:
+
+**Properties:**
+
+- `startDate` `string` required:
+
+- `endDate` `string` required:
+
+- `analytics` `array` required:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `period` `unknown` required:
+
+- `totalHours` `number` required:
+
+- `totalAmount` `number` required:
+
+- `entriesCount` `unknown` required:
+
+- `projectsCount` `unknown` required:
+
+- `clientsCount` `unknown` required:
+
+- `averageHoursPerEntry` `number` required:
+
+- `statistics` `object` required:
+
+**Properties:**
+
+- `totalPeriods` `number` required:
+
+- `averageHoursPerPeriod` `number` required:
+
+- `averageAmountPerPeriod` `number` required:
+
+- `mostProductivePeriod` `unknown` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="gettimeanalytics400">GetTimeAnalytics400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="gettimeanalyticsinput">GetTimeAnalyticsInput</h3></summary>
+
+**Type:** `unknown`
+
+</details>
+
+<details>
+
+<summary><h3 id="getproductivitymetrics">GetProductivityMetrics</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `dateRange` `object` required:
+
+**Properties:**
+
+- `startDate` `string` required:
+
+- `endDate` `string` required:
+
+- `totalDays` `number` required:
+
+- `productivity` `object` required:
+
+**Properties:**
+
+- `totalHours` `number` required:
+
+- `totalAmount` `number` required:
+
+- `averageHoursPerDay` `number` required:
+
+- `averageSessionDuration` `number` required:
+
+- `totalSessions` `number` required:
+
+- `uniqueProjects` `number` required:
+
+- `uniqueClients` `number` required:
+
+- `dailyDistribution` `array` required:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `day` `string` required:
+
+- `hours` `number` required:
+
+- `percentage` `number` required:
+
+- `topProjects` `array` required:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `name` `unknown` required:
+
+- `client` `unknown` required:
+
+- `hours` `number` required:
+
+- `amount` `number` required:
+
+- `percentage` `number` required:
+
+- `topClients` `array` required:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `name` `unknown` required:
+
+- `hours` `number` required:
+
+- `amount` `number` required:
+
+- `projectsCount` `number` required:
+
+- `percentage` `number` required:
+
+- `peakHours` `array` required:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `hour` `number` required:
+
+- `hours` `number` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="getproductivitymetrics400">GetProductivityMetrics400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="getproductivitymetricsinput">GetProductivityMetricsInput</h3></summary>
+
+**Type:** `unknown`
+
+</details>
+
+<details>
+
+<summary><h3 id="exporttimeentries">ExportTimeEntries</h3></summary>
+
+**Type:** `object`
+
+**Additional Properties:**
+
+- Allowed: true
+
+</details>
+
+<details>
+
+<summary><h3 id="exporttimeentries400">ExportTimeEntries400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="exporttimeentriesinput">ExportTimeEntriesInput</h3></summary>
+
+**Type:** `unknown`
+
+</details>
+
+<details>
+
+<summary><h3 id="exportinvoices">ExportInvoices</h3></summary>
+
+**Type:** `object`
+
+**Additional Properties:**
+
+- Allowed: true
+
+</details>
+
+<details>
+
+<summary><h3 id="exportinvoices400">ExportInvoices400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="exportinvoicesinput">ExportInvoicesInput</h3></summary>
+
+**Type:** `unknown`
+
+</details>
+
+<details>
+
+<summary><h3 id="exportclienttimeentries">ExportClientTimeEntries</h3></summary>
+
+**Type:** `object`
+
+**Additional Properties:**
+
+- Allowed: true
+
+</details>
+
+<details>
+
+<summary><h3 id="exportclienttimeentries400">ExportClientTimeEntries400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="exportclienttimeentriesinput">ExportClientTimeEntriesInput</h3></summary>
+
+**Type:** `unknown`
+
+</details>
+
+<details>
+
+<summary><h3 id="exportprojecttimeentries">ExportProjectTimeEntries</h3></summary>
+
+**Type:** `object`
+
+**Additional Properties:**
+
+- Allowed: true
+
+</details>
+
+<details>
+
+<summary><h3 id="exportprojecttimeentries400">ExportProjectTimeEntries400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="exportprojecttimeentries404">ExportProjectTimeEntries404</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `error` `string` required default: "Project not found":
+
+</details>
+
+<details>
+
+<summary><h3 id="exportprojecttimeentriesinput">ExportProjectTimeEntriesInput</h3></summary>
+
+**Type:** `unknown`
+
+</details>
+
+<details>
+
+<summary><h3 id="exportclientprojectstimeentries">ExportClientProjectsTimeEntries</h3></summary>
+
+**Type:** `object`
+
+**Additional Properties:**
+
+- Allowed: true
+
+</details>
+
+<details>
+
+<summary><h3 id="exportclientprojectstimeentries400">ExportClientProjectsTimeEntries400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="exportclientprojectstimeentries404">ExportClientProjectsTimeEntries404</h3></summary>
+
+**One of (Exclusive Union):**
+
+- **Option 1:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `error` `string` required default: "Client not found":
+
+- **Option 2:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `error` `string` required default: "Some projects not found or do not belong to this client":
+
+- `missingProjectIds` `array` required:
+
+**Array items:**
+
+**Type:** `string`
+
+</details>
+
+<details>
+
+<summary><h3 id="exportclientprojectstimeentriesinput">ExportClientProjectsTimeEntriesInput</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `projectIds` `array` required:
+
+**Array items:**
+
+**Type:** `string` (format: uuid)
+
+- Minimum items: 1
+
+- Maximum items: 50
+
+- `startDate` `string` (format: date-time):
+
+- `endDate` `string` (format: date-time):
+
+</details>
+
+<details>
+
 <summary><h3 id="createinvoice201">CreateInvoice201</h3></summary>
 
 **Type:** `object`
@@ -2707,6 +3992,8 @@ Content Type: `application/empty`
 
 - `clientId` `string` required:
 
+- `invoiceNumber` `string` required:
+
 - `dateFrom` `string` required:
 
 - `dateTo` `string` required:
@@ -2718,6 +4005,8 @@ Content Type: `application/empty`
 - `paidAmount` `string` required:
 
 - `pdfUrl` `string` required:
+
+- `notes` `string` required:
 
 </details>
 
@@ -2734,18 +4023,6 @@ Content Type: `application/empty`
 - **Option 2:**
 
 **Type:** [`ValidationError`](#validationerror)
-
-</details>
-
-<details>
-
-<summary><h3 id="createinvoice404">CreateInvoice404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Client not found":
 
 </details>
 
@@ -2851,6 +4128,8 @@ Content Type: `application/empty`
 
 - `clientId` `string` required:
 
+- `invoiceNumber` `string` required:
+
 - `dateFrom` `string` required:
 
 - `dateTo` `string` required:
@@ -2862,6 +4141,8 @@ Content Type: `application/empty`
 - `paidAmount` `string` required:
 
 - `pdfUrl` `string` required:
+
+- `notes` `string` required:
 
 - `pagination` `object` required:
 
@@ -2991,6 +4272,8 @@ Content Type: `application/empty`
 
 - `clientId` `string` required:
 
+- `invoiceNumber` `string` required:
+
 - `dateFrom` `string` required:
 
 - `dateTo` `string` required:
@@ -3003,6 +4286,8 @@ Content Type: `application/empty`
 
 - `pdfUrl` `string` required:
 
+- `notes` `string` required:
+
 </details>
 
 <details>
@@ -3010,18 +4295,6 @@ Content Type: `application/empty`
 <summary><h3 id="getinvoice400">GetInvoice400</h3></summary>
 
 **Type:** [`ValidationError`](#validationerror)
-
-</details>
-
-<details>
-
-<summary><h3 id="getinvoice404">GetInvoice404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Invoice not found":
 
 </details>
 
@@ -3063,21 +4336,231 @@ Content Type: `application/empty`
 
 <details>
 
-<summary><h3 id="deleteinvoice404">DeleteInvoice404</h3></summary>
+<summary><h3 id="deleteinvoiceinput">DeleteInvoiceInput</h3></summary>
 
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Invoice not found":
+**Type:** `unknown`
 
 </details>
 
 <details>
 
-<summary><h3 id="deleteinvoiceinput">DeleteInvoiceInput</h3></summary>
+<summary><h3 id="updateinvoice">UpdateInvoice</h3></summary>
+
+**One of (Exclusive Union):**
+
+- **Option 1:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `invoiceLines` `array`:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `id` `string` required:
+
+- `description` `string` required:
+
+- `projectId` `string` required:
+
+- `hours` `string` required:
+
+- `rate` `string` required:
+
+- `amount` `string` required:
+
+- `invoiceId` `string` required:
+
+- `id` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `status` **Any of (Union):** required:
+
+- **Option 1:**
+
+**Type:** `string`
+
+**Default:** `"DRAFT"`
+
+- **Option 2:**
+
+**Type:** `string`
+
+**Default:** `"SENT"`
+
+- **Option 3:**
+
+**Type:** `string`
+
+**Default:** `"PAID"`
+
+- `clientId` `string` required:
+
+- `invoiceNumber` `string` required:
+
+- `dateFrom` `string` required:
+
+- `dateTo` `string` required:
+
+- `sentAt` `string` required:
+
+- `paidAt` `string` required:
+
+- `paidAmount` `string` required:
+
+- `pdfUrl` `string` required:
+
+- `notes` `string` required:
+
+- **Option 2:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `client` `object`:
+
+**Properties:**
+
+- `id` `string` required:
+
+- `name` `string` required:
+
+- `email` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `invoiceLines` `array`:
+
+**Array items:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `project` `object`:
+
+**Properties:**
+
+- `id` `string` required:
+
+- `name` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `description` `string` required:
+
+- `hourlyRate` `string` required:
+
+- `clientId` `string` required:
+
+- `id` `string` required:
+
+- `description` `string` required:
+
+- `projectId` `string` required:
+
+- `hours` `string` required:
+
+- `rate` `string` required:
+
+- `amount` `string` required:
+
+- `invoiceId` `string` required:
+
+- `id` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `status` **Any of (Union):** required:
+
+- **Option 1:**
+
+**Type:** `string`
+
+**Default:** `"DRAFT"`
+
+- **Option 2:**
+
+**Type:** `string`
+
+**Default:** `"SENT"`
+
+- **Option 3:**
+
+**Type:** `string`
+
+**Default:** `"PAID"`
+
+- `clientId` `string` required:
+
+- `invoiceNumber` `string` required:
+
+- `dateFrom` `string` required:
+
+- `dateTo` `string` required:
+
+- `sentAt` `string` required:
+
+- `paidAt` `string` required:
+
+- `paidAmount` `string` required:
+
+- `pdfUrl` `string` required:
+
+- `notes` `string` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="updateinvoice400">UpdateInvoice400</h3></summary>
+
+**One of (Exclusive Union):**
+
+- **Option 1:**
 
 **Type:** `unknown`
+
+- **Option 2:**
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="updateinvoiceinput">UpdateInvoiceInput</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `dateFrom` `string` (format: date-time):
+
+- `dateTo` `string` (format: date-time):
 
 </details>
 
@@ -3177,6 +4660,8 @@ Content Type: `application/empty`
 
 - `clientId` `string` required:
 
+- `invoiceNumber` `string` required:
+
 - `dateFrom` `string` required:
 
 - `dateTo` `string` required:
@@ -3188,6 +4673,8 @@ Content Type: `application/empty`
 - `paidAmount` `string` required:
 
 - `pdfUrl` `string` required:
+
+- `notes` `string` required:
 
 </details>
 
@@ -3204,18 +4691,6 @@ Content Type: `application/empty`
 - **Option 2:**
 
 **Type:** [`ValidationError`](#validationerror)
-
-</details>
-
-<details>
-
-<summary><h3 id="updateinvoicestatus404">UpdateInvoiceStatus404</h3></summary>
-
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Invoice not found":
 
 </details>
 
@@ -3265,20 +4740,214 @@ Content Type: `application/empty`
 
 <details>
 
-<summary><h3 id="generateinvoicepdf404">GenerateInvoicePdf404</h3></summary>
+<summary><h3 id="generateinvoicepdfinput">GenerateInvoicePdfInput</h3></summary>
 
-**Type:** `object`
-
-**Properties:**
-
-- `error` `string` required default: "Invoice not found":
+**Type:** `unknown`
 
 </details>
 
 <details>
 
-<summary><h3 id="generateinvoicepdfinput">GenerateInvoicePdfInput</h3></summary>
+<summary><h3 id="updateinvoiceline">UpdateInvoiceLine</h3></summary>
+
+**One of (Exclusive Union):**
+
+- **Option 1:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `id` `string` required:
+
+- `description` `string` required:
+
+- `projectId` `string` required:
+
+- `hours` `string` required:
+
+- `rate` `string` required:
+
+- `amount` `string` required:
+
+- `invoiceId` `string` required:
+
+- **Option 2:**
+
+**Type:** `object`
+
+**Properties:**
+
+- `project` `object`:
+
+**Properties:**
+
+- `id` `string` required:
+
+- `name` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `description` `string` required:
+
+- `hourlyRate` `string` required:
+
+- `clientId` `string` required:
+
+- `id` `string` required:
+
+- `description` `string` required:
+
+- `projectId` `string` required:
+
+- `hours` `string` required:
+
+- `rate` `string` required:
+
+- `amount` `string` required:
+
+- `invoiceId` `string` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="updateinvoiceline400">UpdateInvoiceLine400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="updateinvoicelineinput">UpdateInvoiceLineInput</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `description` `string`:
+
+- Minimum length: 1
+
+- Maximum length: 255
+
+- `hours` `number`:
+
+- Must be strictly greater than: 0
+
+- `rate` `number`:
+
+- Must be strictly greater than: 0
+
+</details>
+
+<details>
+
+<summary><h3 id="deleteinvoiceline">DeleteInvoiceLine</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `message` `string` required default: "Invoice line deleted successfully":
+
+</details>
+
+<details>
+
+<summary><h3 id="deleteinvoiceline400">DeleteInvoiceLine400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="deleteinvoicelineinput">DeleteInvoiceLineInput</h3></summary>
 
 **Type:** `unknown`
+
+</details>
+
+<details>
+
+<summary><h3 id="addinvoiceline201">AddInvoiceLine201</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `project` `object`:
+
+**Properties:**
+
+- `id` `string` required:
+
+- `name` `string` required:
+
+- `createdAt` `string` required:
+
+- `updatedAt` `string` required:
+
+- `userId` `string` required:
+
+- `description` `string` required:
+
+- `hourlyRate` `string` required:
+
+- `clientId` `string` required:
+
+- `id` `string` required:
+
+- `description` `string` required:
+
+- `projectId` `string` required:
+
+- `hours` `string` required:
+
+- `rate` `string` required:
+
+- `amount` `string` required:
+
+- `invoiceId` `string` required:
+
+</details>
+
+<details>
+
+<summary><h3 id="addinvoiceline400">AddInvoiceLine400</h3></summary>
+
+**Type:** [`ValidationError`](#validationerror)
+
+</details>
+
+<details>
+
+<summary><h3 id="addinvoiceline">AddInvoiceLine</h3></summary>
+
+**Type:** `object`
+
+**Properties:**
+
+- `description` `string` required:
+
+- Minimum length: 1
+
+- Maximum length: 255
+
+- `hours` `number` required:
+
+- Must be strictly greater than: 0
+
+- `rate` `number` required:
+
+- Must be strictly greater than: 0
+
+- `projectId` `string` (format: uuid) required:
 
 </details>

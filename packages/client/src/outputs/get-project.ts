@@ -32,5 +32,3 @@ export type GetProject = {
 };
 
 export type GetProject400 = models.ValidationError;
-
-export type GetProject404 = { error: 'Project not found' };
