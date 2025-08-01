@@ -6,7 +6,7 @@ Create new route similar to the existing ones in the `apps/backend/routes` direc
 
 - Importing necessary modules
 - Using validate middleware
-- Using verifyToken middleware when needed
+- Using authenticated middleware when needed
 - Add route to `apps/backend/src/app.ts`
 
 ### Business Logic

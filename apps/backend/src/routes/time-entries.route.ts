@@ -5,7 +5,7 @@ import { z } from 'zod';
 import type { Prisma } from '@iworked/db';
 import { prisma } from '@iworked/db';
 
-import { verifyToken } from '../middlewares/auth.ts';
+import { authenticated } from '../middlewares/auth.ts';
 import { validate } from '../middlewares/validator.ts';
 
 export default async function (router: Hono) {
@@ -16,7 +16,7 @@ export default async function (router: Hono) {
    */
   router.post(
     '/api/time-entries',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       startedAt: {
         select: payload.body.startedAt,
@@ -92,7 +92,7 @@ export default async function (router: Hono) {
    */
   router.get(
     '/api/time-entries',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       page: {
         select: payload.query.page,
@@ -172,7 +172,7 @@ export default async function (router: Hono) {
    */
   router.get(
     '/api/time-entries/:id',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,
@@ -211,7 +211,7 @@ export default async function (router: Hono) {
    */
   router.patch(
     '/api/time-entries/:id',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,
@@ -311,7 +311,7 @@ export default async function (router: Hono) {
    */
   router.delete(
     '/api/time-entries/:id',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,

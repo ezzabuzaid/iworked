@@ -3,7 +3,7 @@ import { useLocalStorage } from '@uidotdev/usehooks';
 import * as Icons from 'lucide-react';
 import { useMemo } from 'react';
 
-import { authClient } from '../auth-client.tsx';
+import { authClient } from '../auth-client.ts';
 
 const anonymousSuggestions = [
   {

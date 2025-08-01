@@ -409,6 +409,7 @@ const iWorked = new IWorked({
 
 const result = await iWorked.request('POST /api/projects', {
   name: 'example',
+  hourlyRate: 1,
   clientId: '123e4567-e89b-12d3-a456-426614174000',
 });
 
@@ -551,10 +552,7 @@ const iWorked = new IWorked({
   token: '"<token>"',
 });
 
-const result = await iWorked.request('PATCH /api/projects/{id}', {
-  description: 'example',
-  hourlyRate: 1,
-});
+const result = await iWorked.request('PATCH /api/projects/{id}', {});
 
 console.log(result.data);
 ```
@@ -606,7 +604,6 @@ const iWorked = new IWorked({
 const result = await iWorked.request('POST /api/time-entries', {
   startedAt: '2025-07-17T09:08:00.097Z',
   endedAt: '2025-07-17T09:08:00.097Z',
-  note: 'example',
   projectId: '123e4567-e89b-12d3-a456-426614174000',
 });
 
@@ -749,10 +746,7 @@ const iWorked = new IWorked({
   token: '"<token>"',
 });
 
-const result = await iWorked.request('PATCH /api/time-entries/{id}', {
-  endedAt: '2025-07-17T09:08:00.097Z',
-  note: 'example',
-});
+const result = await iWorked.request('PATCH /api/time-entries/{id}', {});
 
 console.log(result.data);
 ```

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import type { Prisma } from '@iworked/db';
 import { prisma } from '@iworked/db';
 
-import { verifyToken } from '../middlewares/auth.ts';
+import { authenticated } from '../middlewares/auth.ts';
 import { validate } from '../middlewares/validator.ts';
 
 export default async function (router: Hono) {
@@ -16,7 +16,7 @@ export default async function (router: Hono) {
    */
   router.post(
     '/api/invoices',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       clientId: {
         select: payload.body.clientId,
@@ -188,7 +188,7 @@ export default async function (router: Hono) {
    */
   router.get(
     '/api/invoices',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       page: {
         select: payload.query.page,
@@ -260,7 +260,7 @@ export default async function (router: Hono) {
    */
   router.get(
     '/api/invoices/:id',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,
@@ -308,7 +308,7 @@ export default async function (router: Hono) {
    */
   router.patch(
     '/api/invoices/:id/status',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,
@@ -394,7 +394,7 @@ export default async function (router: Hono) {
    */
   router.post(
     '/api/invoices/:id/pdf',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,
@@ -448,7 +448,7 @@ export default async function (router: Hono) {
    */
   router.delete(
     '/api/invoices/:id',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,

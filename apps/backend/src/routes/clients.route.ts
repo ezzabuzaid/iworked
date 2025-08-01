@@ -4,7 +4,7 @@ import { z } from 'zod';
 import type { Prisma } from '@iworked/db';
 import { prisma } from '@iworked/db';
 
-import { verifyToken } from '../middlewares/auth.ts';
+import { authenticated } from '../middlewares/auth.ts';
 import { validate } from '../middlewares/validator.ts';
 
 export default async function (router: Hono) {
@@ -15,7 +15,7 @@ export default async function (router: Hono) {
    */
   router.post(
     '/api/clients',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       name: {
         select: payload.body.name,
@@ -48,7 +48,7 @@ export default async function (router: Hono) {
    */
   router.get(
     '/api/clients',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       page: {
         select: payload.query.page,
@@ -102,7 +102,7 @@ export default async function (router: Hono) {
    */
   router.get(
     '/api/clients/:id',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,
@@ -144,7 +144,7 @@ export default async function (router: Hono) {
    */
   router.patch(
     '/api/clients/:id',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       id: {
         select: payload.params.id,

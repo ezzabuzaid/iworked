@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { prisma } from '@iworked/db';
 
-import { verifyToken } from '../middlewares/auth.ts';
+import { authenticated } from '../middlewares/auth.ts';
 import { validate } from '../middlewares/validator.ts';
 
 export default async function (router: Hono) {
@@ -14,7 +14,7 @@ export default async function (router: Hono) {
    */
   router.get(
     '/api/reports/summary',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       startDate: {
         select: payload.query.startDate,
@@ -202,7 +202,7 @@ export default async function (router: Hono) {
    */
   router.get(
     '/api/reports/detailed',
-    verifyToken(),
+    authenticated(),
     validate((payload) => ({
       startDate: {
         select: payload.query.startDate,
