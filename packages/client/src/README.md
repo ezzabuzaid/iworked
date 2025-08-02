@@ -352,10 +352,7 @@ const iWorked = new IWorked({
   token: '"<token>"',
 });
 
-const result = await iWorked.request('PATCH /api/clients/{id}', {
-  name: 'example',
-  email: 'user@example.com',
-});
+const result = await iWorked.request('PATCH /api/clients/{id}', {});
 
 console.log(result.data);
 ```
@@ -400,7 +397,6 @@ const iWorked = new IWorked({
 
 const result = await iWorked.request('POST /api/projects', {
   name: 'example',
-  description: 'example',
   clientId: '123e4567-e89b-12d3-a456-426614174000',
 });
 
@@ -531,10 +527,7 @@ const iWorked = new IWorked({
   token: '"<token>"',
 });
 
-const result = await iWorked.request('PATCH /api/projects/{id}', {
-  description: 'example',
-  hourlyRate: 1,
-});
+const result = await iWorked.request('PATCH /api/projects/{id}', {});
 
 console.log(result.data);
 ```
@@ -711,8 +704,8 @@ const iWorked = new IWorked({
 });
 
 const result = await iWorked.request('PATCH /api/time-entries/{id}', {
+  startedAt: '2025-07-17T09:08:00.097Z',
   endedAt: '2025-07-17T09:08:00.097Z',
-  note: 'example',
 });
 
 console.log(result.data);
@@ -799,16 +792,7 @@ const iWorked = new IWorked({
   token: '"<token>"',
 });
 
-const result = await iWorked.request('POST /api/time-entries/bulk', {
-  entries: [
-    {
-      startedAt: '2025-07-17T09:08:00.097Z',
-      endedAt: '2025-07-17T09:08:00.097Z',
-      note: 'example',
-      projectId: '123e4567-e89b-12d3-a456-426614174000',
-    },
-  ],
-});
+const result = await iWorked.request('POST /api/time-entries/bulk', {});
 
 console.log(result.data);
 ```
@@ -1359,8 +1343,6 @@ const result = await iWorked.request(
   'POST /api/reports/export/clients/{clientId}/projects/time-entries',
   {
     projectIds: ['123e4567-e89b-12d3-a456-426614174000'],
-    startDate: '2025-07-17T09:08:00.097Z',
-    endDate: '2025-07-17T09:08:00.097Z',
   },
 );
 
@@ -1634,6 +1616,7 @@ const iWorked = new IWorked({
 
 const result = await iWorked.request('PATCH /api/invoices/{id}/status', {
   status: 'SENT',
+  paidAmount: 1,
 });
 
 console.log(result.data);
